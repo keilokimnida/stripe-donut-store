@@ -1,4 +1,5 @@
 // CONTROLLERS
+const accountController = require("./controllers/account");
 const authController = require("./controllers/auth");
 const productController = require("./controllers/product");
 
@@ -14,6 +15,9 @@ module.exports = router => {
 
     // LOGIN
     router.post("/api/v1/login", authController.clientLogin);
+
+    // ACCOUNT
+    router.get("/api/v1/account/:accountID", isLoggedIn, accountController.findAccountByID )
     
     // PRODUCTS
     router.get("/api/v1/products", productController.findAllProducts);

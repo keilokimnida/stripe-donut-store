@@ -38,6 +38,8 @@ const Products: React.FC = () => {
         });
 
         // Clean up to prevent memory leak
+        // Boolean flag method
+        // https://medium.com/wesionary-team/how-to-fix-memory-leak-issue-in-react-js-using-hook-a5ecbf9becf8
         return (() => {
             componentMounted = false;
         });
