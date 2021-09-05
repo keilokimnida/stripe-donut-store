@@ -18,7 +18,7 @@ const Products: React.FC = () => {
     useEffect(() => {
 
         let componentMounted = true;
-
+        window.scrollTo(0, 0)
         axios.get(`${config.baseUrl}/products`)
         .then((res) => {
             console.log(res);

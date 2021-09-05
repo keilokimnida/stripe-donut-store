@@ -40,7 +40,7 @@ const Membership: React.FC = () => {
                             <p>It's now or never, sign up now to get exclusive deals for Stripe Donuts!</p>
                         </div>
                         <div className="c-Card__Btn">
-                            <button type = "button">Get Started</button>
+                            <button type = "button">Add to Cart</button>
                         </div>
 
                     </div>

@@ -8,6 +8,7 @@ import { clearLocalStorage } from '../utilities/localStorageUtils';
 import Badge from '@material-ui/core/Badge';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { NavLink } from 'react-router-dom';
 
 const Header: React.FC = () => {
 
@@ -50,8 +51,8 @@ const Header: React.FC = () => {
                 {/* Right section */}
                 <div className="c-Header__Right">
                     <div className="c-Header__Links">
-                        <a href="/products">Products</a>
-                        <a href="/membership">Membership</a>
+                        <NavLink to="/products">Products</NavLink>
+                        <NavLink to="/membership">Membership</NavLink>
                     </div>
                     <div className="c-Header__Icons">
                         <div className="c-Header__Cart">

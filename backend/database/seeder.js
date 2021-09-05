@@ -2,6 +2,7 @@
 const { Accounts } = require("../src/models/Accounts");
 const { Passwords } = require("../src/models/Passwords");
 const { Products } = require("../src/models/Products");
+const { CartItem } = require("../src/models/CartItem");
 
 // NPM modules import
 const faker = require("faker");
@@ -21,6 +22,7 @@ module.exports.seeder = async () => {
                 firstname,
                 lastname,
                 email,
+                membership: 2,
                 passwords: [{
                     password: bcrypt.hashSync("123", 10)
                 }]

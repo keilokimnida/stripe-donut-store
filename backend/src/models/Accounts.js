@@ -27,6 +27,13 @@ const Accounts = db.define(
             allowNull: false,
             unique: true
         },
+        membership: {
+            // ENUM data type maps each valid string value to an index starting at 1
+            // 1 = standard, 2 = normal, ...
+            // Only the specified values below are valid in string
+            type: DataTypes.ENUM(["standard", "normal"]),
+            allowNull: false
+        }
     },
     {
         tableName: "accounts",

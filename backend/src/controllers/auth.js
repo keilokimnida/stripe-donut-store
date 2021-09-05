@@ -49,6 +49,7 @@ module.exports.clientLogin = async (req, res) => {
             account_id: account.account_id,
             username: account.username,
             email: account.email,
+            membership: account.membership
         }, jwtSecret, { expiresIn: "12h" });
 
         return res.status(200).json({
@@ -60,7 +61,8 @@ module.exports.clientLogin = async (req, res) => {
                 username: account.username,
                 email: account.email,
                 firstname: account.firstname,
-                lastname: account.lastname
+                lastname: account.lastname,
+                membership: account.membership
             }
         });
 
