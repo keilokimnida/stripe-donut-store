@@ -1,6 +1,7 @@
 // Model Imports
 const { Accounts } = require("../src/models/Accounts");
 const { Passwords } = require("../src/models/Passwords");
+const { Products } = require("../src/models/Products");
 
 // NPM modules import
 const faker = require("faker");
@@ -26,6 +27,20 @@ module.exports.seeder = async () => {
             }, {
                 include: ["passwords"]
             });
+        }
+        {
+            // Insert products
+            for (let i = 0; i < 10; i++) {
+                let price = Math.round(faker.commerce.price() / 10) + 0.9;
+                let productName = faker.lorem.word();
+                productName = productName.charAt(0).toUpperCase() + productName.slice(1) + " Donut"; // capitalize the word
+
+                await Products.create({
+                    product_name: productName,
+                    product_price: price
+                });
+            }
+
         }
 
         console.log("SEEDING COMPLETE");

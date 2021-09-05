@@ -1,5 +1,6 @@
 const { Accounts } = require("./src/models/Accounts");
 const { Passwords } = require("./src/models/Passwords");
+const { Products } = require("./src/models/Products");
 
 const express = require("express");
 const cors = require("cors");

@@ -1,4 +1,9 @@
+// CONTROLLERS
 const authController = require("./controllers/auth");
+const productController = require("./controllers/product");
+
+// MIDDLEWARES
+const { isLoggedIn } = require("./middlewares/login");
 
 module.exports = router => {
 
@@ -9,5 +14,8 @@ module.exports = router => {
 
     // LOGIN
     router.post("/api/v1/login", authController.clientLogin);
+    
+    // PRODUCTS
+    router.get("/api/v1/products", productController.findAllProducts);
 
 };

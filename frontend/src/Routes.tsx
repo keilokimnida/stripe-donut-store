@@ -25,7 +25,7 @@ const Routes: React.FC = () => {
                 <Route exact path="/">
                     <Redirect to="/products" />
                 </Route>
-                <Route path = "/products" render = {(props) => authGuard(Products)(props)}/>
+                <Route path = "/products" render={() => <Products/>}/>
             </Switch>
         </Router>
     )
