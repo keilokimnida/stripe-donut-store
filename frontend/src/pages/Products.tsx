@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import  { toast, ToastContainer } from 'react-toastify';
 
 import Title from '../common/Title';
+import Header from '../common/Header';
 import config from '../config/config';
 
 const Products: React.FC = () => {
@@ -21,6 +22,9 @@ const Products: React.FC = () => {
                 pauseOnHover
             />
             <Title title="Products" />
+            <main className = "l-Main">
+                <Header />
+            </main>
         </>
     )
 }
