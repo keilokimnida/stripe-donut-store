@@ -1,6 +1,7 @@
 // CONTROLLERS
 const accountController = require("./controllers/account");
 const authController = require("./controllers/auth");
+const cartController = require("./controllers/cart");
 const productController = require("./controllers/product");
 
 // MIDDLEWARES
@@ -17,9 +18,15 @@ module.exports = router => {
     router.post("/api/v1/login", authController.clientLogin);
 
     // ACCOUNT
-    router.get("/api/v1/account/:accountID", isLoggedIn, accountController.findAccountByID )
+    router.get("/api/v1/account/:accountID", isLoggedIn, accountController.findAccountByID);
     
     // PRODUCTS
     router.get("/api/v1/products", productController.findAllProducts);
 
+    // CART
+    router.get("/api/v1/cart/:accountID", isLoggedIn, cartController.findCartItemsByAccountID);
+    router.post("/api/v1/cart", isLoggedIn, cartController.insertCartItem);
+    router.put("/api/v1/cart", isLoggedIn, cartController.updateCartItem);
+    router.delete("/api/v1/cart/:accountID/:productID", isLoggedIn, cartController.deleteCartItemByProductID);
+    router.delete("/api/v1/cart/:accountID", isLoggedIn, cartController.deleteCartItemByAccountID);
 };
