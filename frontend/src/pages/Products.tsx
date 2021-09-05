@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
+import { Container, Row, Col } from 'react-bootstrap'
 import donutImg from '../assets/images/donut.jpg';
 
 import Title from '../common/Title';
@@ -59,9 +60,9 @@ const Products: React.FC = () => {
                 pauseOnHover
             />
             <Title title="Products" />
-            <main className="l-Main">
+            <Container fluid className="l-Main">
                 <Header />
-                <div className="c-Products">
+                <Row className="c-Products">
                     {
                         productArr.map((data : {[key: string]: any}, index : number) : JSX.Element => {
                             return <ProductCard 
@@ -73,8 +74,8 @@ const Products: React.FC = () => {
                                     />
                         })
                     }
-                </div>
-            </main>
+                </Row>
+            </Container>
         </>
     )
 }

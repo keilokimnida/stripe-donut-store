@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import { Col } from 'react-bootstrap'
 
 interface ProductCardInterface {
     productID: number;
@@ -9,15 +10,15 @@ interface ProductCardInterface {
 
 const ProductCard: React.FC<ProductCardInterface> = ({ productID, productTitle, price, productImg }) => {
     return (
-        <div className="c-Products-card">
+        <Col xs={12} md={6} lg={4} xl={3} className="c-Products-card">
             <div className="c-Products-card__Img">
-                <img src={productImg} alt="Product"/>
+                <img src={productImg} alt="Product" />
             </div>
             <div className="c-Products-card__Details">
                 <h1>{productTitle}</h1>
                 <h2>S${price.toFixed(2)}</h2>
             </div>
-        </div>
+        </Col>
     )
 }
 
