@@ -130,6 +130,7 @@ const Account: React.FC = () => {
                             }
                         </Formik> */}
                     </div>
+                    {/* Purchase history */}
                 </div>
             </div>
         </>

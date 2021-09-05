@@ -4,6 +4,7 @@ import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-d
 import Login from './pages/Login';
 import Products from './pages/Products';
 import Account from './pages/Account';
+import Membership from './pages/Membership';
 
 // Other imports
 import { getToken } from './utilities/localStorageUtils';
@@ -27,6 +28,7 @@ const Routes: React.FC = () => {
                     <Redirect to="/products" />
                 </Route>
                 <Route path = "/products" render={() => <Products />}/>
+                <Route path = "/membership" render={() => <Membership />}/>
                 <Route path = "/account" render={(props) => authGuard(Account)(props)}/>
             </Switch>
         </Router>
