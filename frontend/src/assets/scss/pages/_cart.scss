@@ -1,0 +1,24 @@
+.c-Cart {
+    width: 75%;
+    margin: auto;
+    &__Empty {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: calc(100vh - 60px);
+        h1 {
+            font-size: $font-large;
+            font-weight: bold;
+            color: $stripe-text-dark;
+        }
+        a {
+            color: $stripe-purple;
+            font-size: $font-small;
+            font-weight: 600;
+            &:hover {
+                opacity: 0.7;
+            }
+        }
+    }
+}

@@ -1,4 +1,4 @@
-const { findCartItemsByAccountID, findCartItemByAccountIDAndProductID, updateCartItem } = require('../services/cart');
+const { findCartItemsByAccountID, insertCartItem, findCartItemByAccountIDAndProductID, updateCartItem, deleteCartItem, deleteAllCartItemByAccountID } = require('../services/cart');
 
 // Get cart by account id
 module.exports.findCartItemsByAccountID = async (req, res) => {
@@ -96,7 +96,7 @@ module.exports.deleteCartItem = async (req, res) => {
         const toBeDeleted = await findCartItemByAccountIDAndProductID(accountID, productID);
         if (!toBeDeleted) return res.status(404).send();
 
-        await this.deleteCartItem(accountID, productID);
+        await deleteCartItem(accountID, productID);
 
         return res.status(204).send();
 
@@ -115,7 +115,7 @@ module.exports.deleteAllCartItemByAccountID = async (req, res) => {
 
         if (!cartExist) return res.status(404).send();
 
-        await this.deleteAllCartItemByAccountID(accountID);
+        await deleteAllCartItemByAccountID(accountID);
 
         return res.status(204).send();
 

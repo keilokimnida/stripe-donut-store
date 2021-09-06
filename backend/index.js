@@ -2,6 +2,7 @@ const { Accounts } = require("./src/models/Accounts");
 const { Passwords } = require("./src/models/Passwords");
 const { Products } = require("./src/models/Products");
 const { CartItem } = require("./src/models/CartItem");
+const { Membership } = require("./src/models/Membership");
 
 const express = require("express");
 const cors = require("cors");

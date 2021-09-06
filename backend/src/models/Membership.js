@@ -1,30 +1,30 @@
 const { DataTypes } = require("sequelize");
 const db = require("../config/connection");
 
-const Products = db.define(
-    "Products",
+const Membership = db.define(
+    "Membership",
     {
-        product_id: {
+        membership_id: {
             type: DataTypes.INTEGER.UNSIGNED,
             primaryKey: true,
             autoIncrement: true
         },
-        product_name: {
+        name: {
             type: DataTypes.STRING(255),
             allowNull: false,
             unique: true
         },
-        product_price: {
-            type: DataTypes.DECIMAL(10, 2),
+        price: {
+            type: DataTypes.STRING(255),
             allowNull: false
         },
         description: {
             type: DataTypes.STRING(500),
-            allowNull: false,
+            allowNull: true
         }
     },
     {
-        tableName: "products",
+        tableName: "membership",
         timestamps: true,
         createdAt: "created_at",
         updatedAt: "updated_at",
@@ -33,4 +33,4 @@ const Products = db.define(
     }
 );
 
-module.exports = { Products };
+module.exports = { Membership };

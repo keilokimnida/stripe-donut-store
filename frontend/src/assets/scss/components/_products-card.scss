@@ -4,87 +4,105 @@
     align-items: center;
     flex-direction: column;
 
-    &__Img {
-        width: 300px;
-        height: 300px;
+    a {
 
-        // For screen size < 1000px, refer to utilities/mixins for more details
-        @include screen-max(1700px) {
-            width: 240px;
-            height: 240px;
+        &:hover {
+            transition: all 0.2s ease 0s, transform 200ms ease 0s;
+            transform: scaleX(0.95) scaleY(0.95);
+        }
+        &:active {
+            transition: all 0.2s ease 0s, transform 200ms ease 0s;
+            transform: scaleX(0.9) scaleY(0.9);
         }
 
-        // For screen size < 1000px, refer to utilities/mixins for more details
-        @include screen-max(1400px) {
-            width: 180px;
-            height: 180px;
-        }
+        .c-Products-card {
+            &__Img {
+                width: 300px;
+                height: 300px;
 
-        // For screen size < 1000px, refer to utilities/mixins for more details
-        @include screen-max(1000px) {
-            width: 220px;
-            height: 220px;
-        }
+                // For screen size < 1000px, refer to utilities/mixins for more details
+                @include screen-max(1700px) {
+                    width: 240px;
+                    height: 240px;
+                }
 
-        // For screen si992pxze < 768px, refer to utilities/mixins for more details
-        @include screen-max(768px) {
-            width: 300px;
-            height: 300px;
-        }
+                // For screen size < 1000px, refer to utilities/mixins for more details
+                @include screen-max(1400px) {
+                    width: 180px;
+                    height: 180px;
+                }
 
-        // For screen size < 1200px, refer to utilities/mixins for more details
-        @include screen-max(576px) {
-            width: 250px;
-            height: 250px;
-        }
+                // For screen size < 1000px, refer to utilities/mixins for more details
+                @include screen-max(1000px) {
+                    width: 220px;
+                    height: 220px;
+                }
 
-        img {
-            width: 100%;
-            height: auto;
-        }
+                // For screen si992pxze < 768px, refer to utilities/mixins for more details
+                @include screen-max(768px) {
+                    width: 300px;
+                    height: 300px;
+                }
 
+                // For screen size < 1200px, refer to utilities/mixins for more details
+                @include screen-max(576px) {
+                    width: 250px;
+                    height: 250px;
+                }
+
+                img {
+                    width: 100%;
+                    height: auto;
+                }
+
+            }
+
+            &__Details {
+                margin-top: 20px;
+                display: flex;
+                justify-content: flex-start;
+                flex-direction: column;
+                width: calc(100% - calc(100% - 300px));
+
+                // For screen size < 1000px, refer to utilities/mixins for more details
+                @include screen-max(1700px) {
+                    width: calc(100% - calc(100% - 240px));
+                }
+
+                // For screen size < 1000px, refer to utilities/mixins for more details
+                @include screen-max(1400px) {
+                    width: calc(100% - calc(100% - 180px));
+                }
+
+                // For screen size < 1000px, refer to utilities/mixins for more details
+                @include screen-max(1000px) {
+                    width: calc(100% - calc(100% - 220px));
+                }
+
+                // For screen si992pxze < 768px, refer to utilities/mixins for more details
+                @include screen-max(768px) {
+                    width: calc(100% - calc(100% - 300px));
+                }
+
+                // For screen size < 1200px, refer to utilities/mixins for more details
+                @include screen-max(576px) {
+                    width: calc(100% - calc(100% - 250px));
+                }
+
+                h1 {
+                    font-size: $font-medium;
+                    font-weight: bold;
+                    color: $stripe-text-dark;
+                }
+
+                h2 {
+                    font-size: $font-small;
+                    font-weight: 600;
+                    color: $stripe-secondary;
+                }
+            }
+        }
     }
 
-    &__Details {
-        margin-top: 20px;
-        display: flex;
-        justify-content: flex-start;
-        flex-direction: column;
-        width: calc(100% - calc(100% - 300px));
 
-        // For screen size < 1000px, refer to utilities/mixins for more details
-        @include screen-max(1700px) {
-            width: calc(100% - calc(100% - 240px));
-        }
-
-        // For screen size < 1000px, refer to utilities/mixins for more details
-        @include screen-max(1400px) {
-            width: calc(100% - calc(100% - 180px));
-        }
-
-        // For screen size < 1000px, refer to utilities/mixins for more details
-        @include screen-max(1000px) {
-            width: calc(100% - calc(100% - 220px));
-        }
-
-        // For screen si992pxze < 768px, refer to utilities/mixins for more details
-        @include screen-max(768px) {
-            width: calc(100% - calc(100% - 300px));
-        }
-
-        // For screen size < 1200px, refer to utilities/mixins for more details
-        @include screen-max(576px) {
-            width: calc(100% - calc(100% - 250px));
-        }
-
-        h1 {
-            font-size: $font-medium;
-        }
-
-        h2 {
-            font-size: $font-small;
-            font-weight: 100;
-            color: rgb(85, 85, 85);
-        }
-    }
 }

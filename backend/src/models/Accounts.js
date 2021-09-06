@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const db = require("../config/connection");
+const { Membership } = require("./Membership");
 
 const Accounts = db.define(
     "Accounts",
@@ -27,12 +28,13 @@ const Accounts = db.define(
             allowNull: false,
             unique: true
         },
-        membership: {
-            // ENUM data type maps each valid string value to an index starting at 1
-            // 1 = standard, 2 = normal, ...
-            // Only the specified values below are valid in string
-            type: DataTypes.ENUM(["standard", "normal"]),
-            allowNull: false
+        fk_membership_id: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            allowNull: false,
+            references: {
+                model: Membership,
+                key: "membership_id"
+            }
         }
     },
     {
@@ -44,5 +46,15 @@ const Accounts = db.define(
         deletedAt: "deleted_at"
     }
 );
+
+Membership.hasMany(Accounts, {
+    foreignKey: "fk_membership_id",
+    as: "account"
+});
+
+Accounts.belongsTo(Membership, {
+    foreignKey: "fk_membership_id",
+    as: "membership"
+});
 
 module.exports = { Accounts };

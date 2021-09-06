@@ -11,6 +11,7 @@
 // Components styles
 @import "components/buttons";
 @import "components/products-card";
+@import "components/logged-out";
 
 // Layout styles
 @import "layout/header";
@@ -22,4 +23,6 @@
 @import "pages/account";
 @import "pages/login";
 @import "pages/products";
+@import "pages/product-details";
 @import "pages/membership";
+@import "pages/cart";

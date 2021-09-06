@@ -3,15 +3,18 @@ import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-d
 
 import Login from './pages/Login';
 import Products from './pages/Products';
+import ProductDetails from './pages/ProductDetails';
 import Account from './pages/Account';
 import Membership from './pages/Membership';
 import Cart from './pages/Cart';
+import MembershipPayment from './pages/MembershipPayment';
 
 // Other imports
 import { getToken } from './utilities/localStorageUtils';
 
+
 // Guard to check if user has token
-const authGuard = (Component: React.FC) => (props : any) => {
+const authGuard = (Component: React.FC<any>) => (props : any) => {
     const token = getToken();
     if (!token) {
         return (<Redirect to="/login" {...props} />);
@@ -28,10 +31,12 @@ const Routes: React.FC = () => {
                 <Route exact path="/">
                     <Redirect to="/products" />
                 </Route>
-                <Route path = "/products" render={() => <Products />}/>
-                <Route path = "/membership" render={() => <Membership />}/>
+                <Route exact path = "/products" render={() => <Products />}/>
+                <Route path = "/products/:productID" render={(props: any) => <ProductDetails {...props} />}/>
+                <Route exact path = "/membership" render={() => <Membership />}/>
+                <Route path = "/membership/payment/:type" render={(props: any) => <MembershipPayment {...props} />}/>
                 <Route path = "/cart" render={() => <Cart />}/>
-                <Route path = "/account" render={(props) => authGuard(Account)(props)}/>
+                <Route path = "/account" render={(props: any) => <Account {...props} />}/>
             </Switch>
         </Router>
     )

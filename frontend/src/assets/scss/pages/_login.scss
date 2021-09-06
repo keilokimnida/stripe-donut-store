@@ -21,6 +21,8 @@
                     h1 {
                         text-align: center;
                         width: 100%;
+                        font-weight: bold;
+                        color: $stripe-text-dark;
                     }
                 }
 
@@ -46,6 +48,9 @@
                 margin-top: 20px;
                 width: 100%;
                 cursor: pointer;
+                box-shadow: none;
+                background-color: $stripe-purple;
+                color: white;
             }
         }
     }

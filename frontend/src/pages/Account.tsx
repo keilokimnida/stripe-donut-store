@@ -7,6 +7,8 @@ import { Formik, Form } from 'formik';
 import jwt_decode from "jwt-decode";
 import { getToken } from '../utilities/localStorageUtils';
 import axios from 'axios';
+import { NavLink } from 'react-router-dom';
+import LoggedOut from '../common/LoggedOut';
 
 const Account: React.FC = () => {
 
@@ -23,8 +25,11 @@ const Account: React.FC = () => {
 
     const toastTiming: number = config.toastTiming;
     const token: string | null = getToken();
-    const decodedToken: LooseObject = jwt_decode(token!);
-    const accountID = decodedToken.account_id;
+    let accountID: string;
+    if (token) {
+        const decodedToken: LooseObject = jwt_decode(token!);
+        accountID = decodedToken.account_id;
+    }
 
     // State declarations
     const [accountData, setAccountData] = useState<accountDataInterface>({
@@ -45,29 +50,29 @@ const Account: React.FC = () => {
                 'Authorization': `Bearer ${token}`
             }
         })
-        .then((res) => {
-            console.log(res);
-            const data = res.data;
-            if (componentMounted) {
-                setAccountData(() => ({
-                    firstName: data.firstname,
-                    lastName: data.lastname,
-                    email: data.email,
-                    username: data.username
-                }));
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-            if (componentMounted) {
-                setAccountData(() => ({
-                    firstName: "Error",
-                    lastName: "Error",
-                    email: "Error",
-                    username: "Error"
-                }));
-            }
-        });
+            .then((res) => {
+                console.log(res);
+                const data = res.data;
+                if (componentMounted) {
+                    setAccountData(() => ({
+                        firstName: data.firstname,
+                        lastName: data.lastname,
+                        email: data.email,
+                        username: data.username
+                    }));
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                if (componentMounted) {
+                    setAccountData(() => ({
+                        firstName: "Error",
+                        lastName: "Error",
+                        email: "Error",
+                        username: "Error"
+                    }));
+                }
+            });
 
         return (() => {
             componentMounted = false;
@@ -91,26 +96,27 @@ const Account: React.FC = () => {
                 <Title title="Account" />
                 <Header />
                 <div className="c-Account">
-                    {/* Profile */}
-                    <div className="c-Account__Profile">
-                        <h1>Profile</h1>
-                        <hr/>
-                        <div className = "c-Profile__Details">
-                            <div className = "c-Profile__Labels">
-                                <label htmlFor="email">Email</label>
-                                <label htmlFor="username">Username</label>
-                                <label htmlFor="firstname">First Name</label>
-                                <label htmlFor="lastname">Last Name</label>
-                            </div>
-                            <div className = "c-Profile__Info">
-                                <p>{accountData.email}</p>
-                                <p>{accountData.username}</p>
-                                <p>{accountData.firstName}</p>
-                                <p>{accountData.lastName}</p>
-                            </div>
+                    {
+                        token ?
+                            <div className="c-Account__Profile">
+                                <h1>Profile</h1>
+                                <hr />
+                                <div className="c-Profile__Details">
+                                    <div className="c-Profile__Labels">
+                                        <label htmlFor="email">Email</label>
+                                        <label htmlFor="username">Username</label>
+                                        <label htmlFor="firstname">First Name</label>
+                                        <label htmlFor="lastname">Last Name</label>
+                                    </div>
+                                    <div className="c-Profile__Info">
+                                        <p>{accountData.email}</p>
+                                        <p>{accountData.username}</p>
+                                        <p>{accountData.firstName}</p>
+                                        <p>{accountData.lastName}</p>
+                                    </div>
 
-                        </div>
-                        {/* <Formik
+                                </div>
+                                {/* <Formik
                             initialValues={{
                                 email: '',
                                 firstname: '',
@@ -129,7 +135,12 @@ const Account: React.FC = () => {
                             )
                             }
                         </Formik> */}
-                    </div>
+                            </div>
+                            :
+                            <LoggedOut type="Manage Account"/>
+                    }
+                    {/* Profile */}
+
                     {/* Purchase history */}
                 </div>
             </div>

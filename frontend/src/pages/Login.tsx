@@ -80,7 +80,7 @@ const Login: React.FC = () => {
                             <label htmlFor="password">Password</label>
                             <input type="password" name="password" value={inputValues.password} placeholder="Enter password" onChange={handleInputChange} />
                         </div>
-                        <button type="button" className="c-Btn c-Btn--primary" onClick={handleBtnClick}>Login</button>
+                        <button type="button" className="c-Btn" onClick={handleBtnClick}>Login</button>
                     </div>
                 </div>
             </div>
