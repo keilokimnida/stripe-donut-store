@@ -124,7 +124,7 @@ module.exports.deleteCartItem = async (req, res) => {
         const { decoded } = res.locals.auth;
 
         const accountID = parseInt(decoded.account_id);
-        const productID = parseInt(req.body.productID);
+        const productID = parseInt(req.params.productID);
 
         const toBeDeleted = await findCartItemByAccountIDAndProductID(accountID, productID);
         if (!toBeDeleted) return res.status(404).send();

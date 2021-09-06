@@ -43,9 +43,9 @@ const Header: React.FC<Props> = ({rerender}) => {
 
     useEffect(() => {
         let componentMounted = true;
-
+     
         if (token) {
-            axios.get(`${config.baseUrl}/cart/${accountID}`, {
+            axios.get(`${config.baseUrl}/cart`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -54,8 +54,11 @@ const Header: React.FC<Props> = ({rerender}) => {
                     console.log(res);
                     const data = res.data;
                     if (componentMounted) {
+                        console.log("data" + data);
                         if (data.length !== 0) {
                             setIsCartUsed(() => true);
+                        } else {
+                            setIsCartUsed(() => false);
                         }
                     }
                 })

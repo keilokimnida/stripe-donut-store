@@ -9,17 +9,14 @@ interface Props {
     qty: number | null,
     setQty: Function,
     variation: string,
-    productID: string
+    productID: string,
+    setRerender?: Function
 }
 
-const ProductQty: React.FC<Props> = ({qty, setQty, variation, productID}) => {
+const ProductQty: React.FC<Props> = ({qty, setQty, variation, productID, setRerender}) => {
 
     const token: string | null = getToken();
 
-
-    useEffect(() => {
-
-    }, []);
 
     // Handlers
     const handleQtyBtn = (type: string) => {
@@ -51,13 +48,12 @@ const ProductQty: React.FC<Props> = ({qty, setQty, variation, productID}) => {
                 } else {
                     setQty((prevState: number) => prevState + 1);
                 }
+                setRerender!((prevState: boolean) => !prevState);
             })
             .catch((err) => {
                 console.log(err);
             });
-
         }
-
     };
 
     return (

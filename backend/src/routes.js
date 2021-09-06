@@ -26,12 +26,12 @@ module.exports = router => {
     router.get("/api/v1/product/:productID", productController.findProductByProductID);
 
     // CART
-    router.get("/api/v1/cart/:accountID", isLoggedIn, cartController.findCartItemsByAccountID);
-    router.get("/api/v1/cart/:accountID/:productID", isLoggedIn, cartController.findCartItemByAccountIDAndProductID);
+    router.get("/api/v1/cart", isLoggedIn, cartController.findCartItemsByAccountID);
+    router.get("/api/v1/cart/:productID", isLoggedIn, cartController.findCartItemByAccountIDAndProductID);
     router.post("/api/v1/cart", isLoggedIn, cartController.insertCartItem);
     router.put("/api/v1/cart", isLoggedIn, cartController.updateCartItem);
-    router.delete("/api/v1/cart/:accountID/:productID", isLoggedIn, cartController.deleteCartItem);
-    router.delete("/api/v1/cart/:accountID", isLoggedIn, cartController.deleteAllCartItemByAccountID);
+    router.delete("/api/v1/cart/:productID", isLoggedIn, cartController.deleteCartItem);
+    router.delete("/api/v1/cart", isLoggedIn, cartController.deleteAllCartItemByAccountID);
 
     // MEMBERSHIP
     router.get("/api/v1/membership", membershipController.findAllMemberships);

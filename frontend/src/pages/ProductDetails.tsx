@@ -69,7 +69,7 @@ const ProductDetails: React.FC<Props> = ({ match }) => {
                 console.log(err);
             });
         // check if user has added it in cart already
-        axios.get(`${config.baseUrl}/cart/${accountID}/${productID}`, {
+        axios.get(`${config.baseUrl}/cart/${productID}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -111,14 +111,13 @@ const ProductDetails: React.FC<Props> = ({ match }) => {
     };
 
     const handleRemoveFromCart = () => {
-        axios.delete(`${config.baseUrl}/cart/${accountID}/${productID}`, {
+        axios.delete(`${config.baseUrl}/cart/${productID}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         })
             .then((res) => {
                 console.log(res);
-                setInCartAlready(() => false);
                 setRerender((prevState) => !prevState)
             })
             .catch((err) => {

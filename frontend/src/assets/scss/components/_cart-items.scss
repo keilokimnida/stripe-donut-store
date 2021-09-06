@@ -2,6 +2,8 @@
     display: flex;
     flex-direction: row;
     margin: 20px 0;
+    justify-content: space-evenly;
+
     &__Img {
         img {
             width: 150px;
@@ -10,7 +12,6 @@
     }
     &__Info {
         display: flex;
-        padding-left: 50px;
         justify-content: center;
         flex-direction: column;
         h1 {
@@ -30,6 +31,20 @@
         }
         .c-Cart-items__Qty {
             margin-top: 20px;
+        }
+    }
+    &__Delete {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        svg {
+            cursor: pointer;
+            &:hover {
+                opacity: 0.9;
+            }
+            &:active {
+                opacity: 0.7;
+            }
         }
     }
 }
