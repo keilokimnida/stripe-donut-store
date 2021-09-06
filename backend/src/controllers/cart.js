@@ -1,4 +1,4 @@
-const { findCartItemsByAccountID } = require('../services/cart');
+const { findCartItemsByAccountID, findCartItemByAccountIDAndProductID, updateCartItem } = require('../services/cart');
 
 // Get cart by account id
 module.exports.findCartItemsByAccountID = async (req, res) => {
@@ -27,6 +27,7 @@ module.exports.insertCartItem = async (req, res) => {
     try {
         const accountID = parseInt(req.body.accountID);
         const productID = parseInt(req.body.productID);
+        const quantity = parseInt(req.body.quantity);
 
         if (isNaN(accountID)) return res.status(400).json({
             message: "Invalid parameter \"accountID\""
@@ -36,7 +37,11 @@ module.exports.insertCartItem = async (req, res) => {
             message: "Invalid parameter \"productID\""
         });
 
-        await insertCartItem(accountID, productID);
+        if (isNaN(quantity)) return res.status(400).json({
+            message: "Invalid parameter \"quantity\""
+        });
+
+        await insertCartItem(accountID, productID, quantity);
         return res.status(201).send("Cart item inserted successfully!");
 
     } catch (error) {
@@ -48,6 +53,33 @@ module.exports.insertCartItem = async (req, res) => {
 // update cart item
 module.exports.updateCartItem = async (req, res) => {
     try {
+        const accountID = parseInt(req.body.accountID);
+        const productID = parseInt(req.body.productID);
+        const quantity = parseInt(req.body.quantity);
+
+        if (isNaN(accountID)) return res.status(400).json({
+            message: "Invalid parameter \"accountID\""
+        });
+
+        if (isNaN(productID)) return res.status(400).json({
+            message: "Invalid parameter \"productID\""
+        });
+
+        if (isNaN(quantity)) return res.status(400).json({
+            message: "Invalid parameter \"quantity\""
+        });
+
+        const toBeUpdated = await findCartItemByAccountIDAndProductID(accountID, productID);
+
+        if (!toBeUpdated) return res.status(404).send();
+
+        if (toBeUpdated.quantity === 1) {
+            await updateCartItem(toBeUpdated, quantity);
+        } else {
+            await deleteCartItem(accountID, productID);
+        }
+
+        return res.status(204).send();
 
     } catch (error) {
         console.log(error);
@@ -56,8 +88,17 @@ module.exports.updateCartItem = async (req, res) => {
 };
 
 // clear cart item
-module.exports.deleteAllCartItemByProductID = async (req, res) => {
+module.exports.deleteCartItem = async (req, res) => {
     try {
+        const accountID = parseInt(req.body.accountID);
+        const productID = parseInt(req.body.productID);
+
+        const toBeDeleted = await findCartItemByAccountIDAndProductID(accountID, productID);
+        if (!toBeDeleted) return res.status(404).send();
+
+        await this.deleteCartItem(accountID, productID);
+
+        return res.status(204).send();
 
     } catch (error) {
         console.log(error);
@@ -66,8 +107,17 @@ module.exports.deleteAllCartItemByProductID = async (req, res) => {
 };
 
 // clear entire cart
-module.exports.deleteAllCartItemByProductID = async (req, res) => {
+module.exports.deleteAllCartItemByAccountID = async (req, res) => {
     try {
+        const accountID = parseInt(req.body.accountID);
+
+        const cartExist = await findCartItemsByAccountID(accountID);
+
+        if (!cartExist) return res.status(404).send();
+
+        await this.deleteAllCartItemByAccountID(accountID);
+
+        return res.status(204).send();
 
     } catch (error) {
         console.log(error);

@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Products from './pages/Products';
 import Account from './pages/Account';
 import Membership from './pages/Membership';
+import Cart from './pages/Cart';
 
 // Other imports
 import { getToken } from './utilities/localStorageUtils';
@@ -29,6 +30,7 @@ const Routes: React.FC = () => {
                 </Route>
                 <Route path = "/products" render={() => <Products />}/>
                 <Route path = "/membership" render={() => <Membership />}/>
+                <Route path = "/cart" render={() => <Cart />}/>
                 <Route path = "/account" render={(props) => authGuard(Account)(props)}/>
             </Switch>
         </Router>

@@ -27,6 +27,6 @@ module.exports = router => {
     router.get("/api/v1/cart/:accountID", isLoggedIn, cartController.findCartItemsByAccountID);
     router.post("/api/v1/cart", isLoggedIn, cartController.insertCartItem);
     router.put("/api/v1/cart", isLoggedIn, cartController.updateCartItem);
-    router.delete("/api/v1/cart/:accountID/:productID", isLoggedIn, cartController.deleteCartItemByProductID);
-    router.delete("/api/v1/cart/:accountID", isLoggedIn, cartController.deleteCartItemByAccountID);
+    router.delete("/api/v1/cart/:accountID/:productID", isLoggedIn, cartController.deleteCartItem);
+    router.delete("/api/v1/cart/:accountID", isLoggedIn, cartController.deleteAllCartItemByAccountID);
 };

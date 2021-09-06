@@ -5,7 +5,7 @@ const { CartItem } = require("./src/models/CartItem");
 
 const express = require("express");
 const cors = require("cors");
-
+const chalk = require('chalk');
 
 const config = require("./src/config/config");
 const routes = require("./src/routes");
@@ -28,12 +28,12 @@ const router = express.Router();
 app.use(router);
 
 app.listen(PORT, (error) => {
-    if (error) console.log(`FAIL TO LISTEN ON PORT ${PORT}`);
-    else console.log(`LISTENING TO PORT ${PORT}`);
+    if (error) console.log(chalk.red(`FAIL TO LISTEN ON PORT ${PORT}`));
+    else console.log(chalk.green(`LISTENING TO PORT ${PORT}`));
 });
 
 // setting this to true will drop all tables and seed new data
-const reset = true;
+const reset = false;
 
 // sync sequelize with sql db
 // immediately invoked function necessary to run await async code
@@ -43,11 +43,11 @@ const reset = true;
         // force: drop all tables and regen them
         // alter: attempts to change tables to conform to models (doesn't always work)
         await db.sync({ force: reset });
-        console.log("SUCCESSFULLY SYNCED DB");
+        console.log(chalk.green("SUCCESSFULLY SYNCED DB"));
 
         // seeding data
         if (reset) {
-            console.log("LOADING SEEDER");
+            console.log(chalk.yellow("LOADING SEEDER"));
             // dynamic imports
             // should help with faster startup if not in use
             const { seeder } = require("./database/seeder");
