@@ -92,7 +92,7 @@ const Header: React.FC<Props> = ({ rerender }) => {
                 {/* Left section */}
                 <div className="c-Header__Left">
                     <div className="c-Logo">
-                        <a href="/products">Stripe Donut</a>
+                        <NavLink to="/products">Stripe Donut</NavLink>
                     </div>
                 </div>
                 {/* Right section */}

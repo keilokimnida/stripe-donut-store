@@ -8,6 +8,8 @@ import Header from '../layout/Header';
 import config from '../config/config';
 import ProductCard from '../common/ProductCard';
 import axios from 'axios';
+import Skeleton from '@material-ui/lab/Skeleton';
+import { NavLink } from 'react-router-dom';
 
 const Products: React.FC = () => {
     const toastTiming = config.toastTiming;
@@ -21,22 +23,26 @@ const Products: React.FC = () => {
         let componentMounted = true;
         window.scrollTo(0, 0)
         axios.get(`${config.baseUrl}/products`)
-        .then((res) => {
-            console.log(res);
-            const data = res.data;
-            if (componentMounted) {
-                setProductArr(() => {
-                    return data.map((productData: {[key: string]: any}) => ({
-                        productID: productData.product_id,
-                        productTitle: productData.product_name,
-                        price: parseFloat(productData.product_price),
-                    }));
-                });
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+            .then((res) => {
+                console.log(res);
+                const data = res.data;
+                if (componentMounted) {
+                    setProductArr(() => {
+                        return data.map((productData: { [key: string]: any }) => ({
+                            productID: productData.product_id,
+                            productTitle: productData.product_name,
+                            price: parseFloat(productData.product_price),
+                        }));
+                    });
+                    setTimeout(() => {
+                        setLoading(() => false);
+                    }, 300);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                setLoading(() => false);
+            });
 
         // Clean up to prevent memory leak
         // Boolean flag method
@@ -64,15 +70,36 @@ const Products: React.FC = () => {
                 <Header />
                 <Row className="c-Products">
                     {
-                        productArr.map((data : {[key: string]: any}, index : number) : JSX.Element => {
-                            return <ProductCard 
-                                        key={index} 
-                                        productID = {data.productID} 
-                                        productTitle={data.productTitle} 
-                                        price={data.price} 
+                        loading ?
+                            <>
+                                {
+                                    [{}, {}, {}].map((data, index) => (
+                                            <Col xs={12} md={6} lg={4} xl={3} className="c-Products-card" key={index}>
+                                                <NavLink to="#">
+                                                    <Skeleton variant="rect" className="c-Products-card__Img" />
+                                                    <div className="c-Products-card__Details">
+                                                        <Skeleton variant="text" width={"50%"} />
+                                                        <Skeleton variant="text" width={"25%"} />
+                                                    </div>
+                                                </NavLink>
+                                            </Col>
+                                    ))
+
+                                }
+                            </>
+                            :
+                            productArr.length !== 0 ?
+                                productArr.map((data: { [key: string]: any }, index: number): JSX.Element => {
+                                    return <ProductCard
+                                        key={index}
+                                        productID={data.productID}
+                                        productTitle={data.productTitle}
+                                        price={data.price}
                                         productImg={donutImg}
                                     />
-                        })
+                                })
+                                :
+                                "Cannot find products"
                     }
                 </Row>
             </Container>

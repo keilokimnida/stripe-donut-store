@@ -9,6 +9,7 @@ import { getToken } from '../utilities/localStorageUtils';
 import axios from 'axios';
 import { NavLink } from 'react-router-dom';
 import LoggedOut from '../common/LoggedOut';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 const Account: React.FC = () => {
 
@@ -60,6 +61,9 @@ const Account: React.FC = () => {
                         email: data.email,
                         username: data.username
                     }));
+                    setTimeout(() => {
+                        setLoading(() => false);
+                    }, 300);
                 }
             })
             .catch((err) => {
@@ -71,6 +75,9 @@ const Account: React.FC = () => {
                         email: "Error",
                         username: "Error"
                     }));
+                    setTimeout(() => {
+                        setLoading(() => false);
+                    }, 300);
                 }
             });
 
@@ -98,25 +105,45 @@ const Account: React.FC = () => {
                 <div className="c-Account">
                     {
                         token ?
-                            <div className="c-Account__Profile">
-                                <h1>Profile</h1>
-                                <hr />
-                                <div className="c-Profile__Details">
-                                    <div className="c-Profile__Labels">
-                                        <label htmlFor="email">Email</label>
-                                        <label htmlFor="username">Username</label>
-                                        <label htmlFor="firstname">First Name</label>
-                                        <label htmlFor="lastname">Last Name</label>
+                            loading ?
+                                <div className="c-Account__Profile">
+                                    <h1>Profile</h1>
+                                    <hr />
+                                    <div className="c-Profile__Details">
+                                        <div className="c-Profile__Labels">
+                                            <label htmlFor="email"><Skeleton variant="text" width={100} /></label>
+                                            <label htmlFor="username"><Skeleton variant="text" width={80} /></label>
+                                            <label htmlFor="firstname"><Skeleton variant="text" width={120} /></label>
+                                            <label htmlFor="lastname"><Skeleton variant="text" width={110} /></label>
+                                        </div>
+                                        <div className="c-Profile__Info">
+                                            <p><Skeleton variant="text" width={200} /></p>
+                                            <p><Skeleton variant="text" width={120} /></p>
+                                            <p><Skeleton variant="text" width={50} /></p>
+                                            <p><Skeleton variant="text" width={40} /></p>
+                                        </div>
                                     </div>
-                                    <div className="c-Profile__Info">
-                                        <p>{accountData.email}</p>
-                                        <p>{accountData.username}</p>
-                                        <p>{accountData.firstName}</p>
-                                        <p>{accountData.lastName}</p>
-                                    </div>
-
                                 </div>
-                                {/* <Formik
+                                :
+                                <div className="c-Account__Profile">
+                                    <h1>Profile</h1>
+                                    <hr />
+                                    <div className="c-Profile__Details">
+                                        <div className="c-Profile__Labels">
+                                            <label htmlFor="email">Email</label>
+                                            <label htmlFor="username">Username</label>
+                                            <label htmlFor="firstname">First Name</label>
+                                            <label htmlFor="lastname">Last Name</label>
+                                        </div>
+                                        <div className="c-Profile__Info">
+                                            <p>{accountData.email}</p>
+                                            <p>{accountData.username}</p>
+                                            <p>{accountData.firstName}</p>
+                                            <p>{accountData.lastName}</p>
+                                        </div>
+
+                                    </div>
+                                    {/* <Formik
                             initialValues={{
                                 email: '',
                                 firstname: '',
@@ -135,9 +162,9 @@ const Account: React.FC = () => {
                             )
                             }
                         </Formik> */}
-                            </div>
+                                </div>
                             :
-                            <LoggedOut type="Manage Account"/>
+                            <LoggedOut type="Manage Account" />
                     }
                     {/* Profile */}
 
