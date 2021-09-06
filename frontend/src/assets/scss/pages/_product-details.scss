@@ -6,7 +6,7 @@
     margin-top: 50px;
 
     &__Img {
-       flex: 1.5;
+        flex: 1.5;
 
         img {
             width: 500px;
@@ -20,42 +20,76 @@
         justify-content: center;
         flex-direction: column;
         min-height: 500px;
+
         h1 {
             font-size: $font-large;
             font-weight: bold;
             color: $stripe-text-dark;
         }
+
         h2 {
             font-size: $font-medium;
             font-weight: 600;
             color: $stripe-secondary;
         }
-        p {
+
+        article {
             font-size: $font-small;
-            font-weight: 200;
+            font-weight: 400;
             color: $stripe-text-dark;
         }
-        button {
+
+        .c-Product-details__Btns {
             margin-top: 20px;
-            width: 100%;
-            cursor: pointer;
-            box-shadow: none;
-            background-color: $stripe-purple;
-            color: white;
+
+            .c-Btns__Added-to-cart {
+                .c-Btn__View {
+                    margin-top: 20px;
+                    width: 100%;
+                    cursor: pointer;
+                    box-shadow: none;
+                    background-color: $stripe-primary;
+                    color: white;
+                }
+
+                .c-Btn__Remove {
+                    margin-top: 20px;
+                    width: 100%;
+                    cursor: pointer;
+                    box-shadow: none;
+                    background-color: $stripe-error-bg;
+                    color: $stripe-error-fg;
+                }
+            }
+
+            .c-Btns__Add-to-cart {
+                button {
+                    margin-top: 20px;
+                    width: 100%;
+                    cursor: pointer;
+                    box-shadow: none;
+                    background-color: $stripe-purple;
+                    color: white;
+                }
+            }
         }
+
         h3 {
             margin-top: 20px;
             font-size: $font-small;
             font-weight: 600;
             color: $stripe-text-dark;
         }
+
         a {
             color: $stripe-purple;
             font-weight: 600;
             width: fit-content;
+
             &:hover {
                 opacity: 0.9;
             }
+
             &:hover {
                 opacity: 0.7;
             }

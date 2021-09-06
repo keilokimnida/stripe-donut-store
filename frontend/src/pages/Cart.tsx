@@ -8,6 +8,8 @@ import Title from '../common/Title';
 import Header from '../layout/Header';
 import { NavLink } from 'react-router-dom';
 import LoggedOut from '../common/LoggedOut';
+import CartItem from '../common/CartItem';
+
 
 const Cart: React.FC = () => {
 
@@ -41,6 +43,18 @@ const Cart: React.FC = () => {
                 if (componentMounted) {
                     if (data.length !== 0) {
                         // set cart array here
+                        setCartArr(() => {
+                            return data.map((cartData: LooseObject, mapIndex: number) => ({
+                                quantity: cartData.quantity,
+                                name: cartData.product.product_name,
+                                unitPrice: parseFloat(cartData.product.product_price),
+                                totalPrice: (() => {
+                                    return cartData.quantity * parseFloat(cartData.product.product_price);
+                                })(),
+                                productID: cartData.product.product_id
+                            }));
+                        });
+
                     }
                     setLoading(() => false);
                 }
@@ -83,9 +97,36 @@ const Cart: React.FC = () => {
                                     <NavLink to="/products">Start adding products!</NavLink>
                                 </div>
                                 :
-                                null
+                                <>
+                                    <div className="c-Cart__Left">
+                                        <h1>Your Items</h1>
+                                        <div className="l-Cart__Items">
+                                            {
+                                                cartArr.map((data: LooseObject, index: number) => (
+                                                    <>
+                                                        <CartItem
+                                                            name={data.name}
+                                                            unitPrice={data.unitPrice}
+                                                            totalPrice={data.totalPrice}
+                                                            quantity={data.quantity}
+                                                            productID={data.productID}
+                                                            key={index}
+                                                        />
+                                                        <hr />
+                                                    </>
+                                                ))
+                                            }
+                                        </div>
+                                    </div>
+                                    <div className="c-Cart__Right">
+                                        <h1>Summary</h1>
+                                        <div className="c-Cart__Checkout-card">
+
+                                        </div>
+                                    </div>
+                                </>
                             :
-                            <LoggedOut type="Cart"/>
+                            <LoggedOut type="Cart" />
                     }
                 </div>
             </div>

@@ -13,7 +13,11 @@ import axios from 'axios';
 import config from '../config/config';
 import jwt_decode from "jwt-decode";
 
-const Header: React.FC = () => {
+interface Props {
+    rerender?: boolean;
+};
+
+const Header: React.FC<Props> = ({rerender}) => {
 
     // https://stackoverflow.com/questions/12710905/how-do-i-dynamically-assign-properties-to-an-object-in-typescript
     // This will allow us to dynamically assign properties to object in typescript
@@ -38,7 +42,7 @@ const Header: React.FC = () => {
     const [isCartUsed, setIsCartUsed] = useState<boolean>(false);
 
     useEffect(() => {
-        let componentMounted = false;
+        let componentMounted = true;
 
         if (token) {
             axios.get(`${config.baseUrl}/cart/${accountID}`, {
@@ -66,7 +70,7 @@ const Header: React.FC = () => {
         return (() => {
             componentMounted = false;
         });
-    });
+    }, [rerender]);
 
     // Handler
     const handleProfilePicClick = (): void => {
@@ -78,7 +82,6 @@ const Header: React.FC = () => {
         history.push("/login");
         toast.success('Successfully logged out!');
     };
-
 
     return (
         <header>

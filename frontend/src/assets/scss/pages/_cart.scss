@@ -1,21 +1,47 @@
 .c-Cart {
     width: 75%;
     margin: auto;
+    display: flex;
+    flex-direction: row;
+    &__Left {
+        flex: 1;
+        h1 {
+            font-size: $font-large;
+            font-weight: bold;
+            color: $stripe-text-dark;
+        }
+        .l-Cart__Items {
+            margin-top: 20px;
+        }
+    }
+
+    &__Right {
+        flex: 1;
+        h1 {
+            font-size: $font-large;
+            font-weight: bold;
+            color: $stripe-text-dark;
+        }
+    }
+
     &__Empty {
         display: flex;
         justify-content: center;
         align-items: center;
         flex-direction: column;
         height: calc(100vh - 60px);
+
         h1 {
             font-size: $font-large;
             font-weight: bold;
             color: $stripe-text-dark;
         }
+
         a {
             color: $stripe-purple;
             font-size: $font-small;
             font-weight: 600;
+
             &:hover {
                 opacity: 0.7;
             }

@@ -1,0 +1,30 @@
+.c-Product-qty {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    &__Minus {
+        margin-top: 0;
+        padding: 8px 10px;
+        box-shadow: none;
+        background-color: #eff0f5;
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    &__Number {
+        font-size: $font-small;
+        font-weight: bold;
+        margin: 0 20px;
+        color: $stripe-primary;
+    }
+
+    &__Plus {
+        margin-top: 0;
+        padding: 8px 10px;
+        box-shadow: none;
+        background-color: #eff0f5;
+    }
+}

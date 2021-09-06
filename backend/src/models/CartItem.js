@@ -31,7 +31,7 @@ const CartItem = db.define(
         quantity: {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
-        },
+        }
     },
     {
         tableName: "cart_item",
@@ -52,12 +52,12 @@ CartItem.belongsTo(Accounts, {
 });
 
 Products.hasMany(CartItem, {
-    foreignKey: " fk_product_id",
+    foreignKey: "fk_product_id",
     as: "cartItem" // Product has many cart item
 });
 
 CartItem.belongsTo(Products, {
-    foreignKey: " fk_product_id",
+    foreignKey: "fk_product_id",
     as: "product" // each cart item has a productid
 });
 

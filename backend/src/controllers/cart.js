@@ -3,7 +3,9 @@ const { findCartItemsByAccountID, insertCartItem, findCartItemByAccountIDAndProd
 // Get cart by account id
 module.exports.findCartItemsByAccountID = async (req, res) => {
     try {
-        const accountID = parseInt(req.params.accountID);
+        const { decoded } = res.locals.auth;
+
+        const accountID = parseInt(decoded.account_id);
 
         if (isNaN(accountID)) return res.status(400).json({
             message: "Invalid parameter \"accountID\""
@@ -22,10 +24,41 @@ module.exports.findCartItemsByAccountID = async (req, res) => {
     }
 };
 
+// Get cart by account id and product id
+module.exports.findCartItemByAccountIDAndProductID = async (req, res) => {
+    try {
+        const { decoded } = res.locals.auth;
+        const productID = parseInt(req.params.productID);
+
+        const accountID = parseInt(decoded.account_id);
+
+        if (isNaN(accountID)) return res.status(400).json({
+            message: "Invalid parameter \"accountID\""
+        });
+
+        if (isNaN(productID)) return res.status(400).json({
+            message: "Invalid parameter \"productID\""
+        });
+
+        const cartItem = await findCartItemByAccountIDAndProductID(accountID, productID);
+        if (!cartItem) return res.status(404).json({
+            message: `\"cartitem\" not found for ${accountID}`
+        });
+
+        return res.status(204).send();
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Error in controller > cart.js! " + error);
+    }
+}
+
 // insert cart item
 module.exports.insertCartItem = async (req, res) => {
     try {
-        const accountID = parseInt(req.body.accountID);
+        const { decoded } = res.locals.auth;
+
+        const accountID = parseInt(decoded.account_id);
         const productID = parseInt(req.body.productID);
         const quantity = parseInt(req.body.quantity);
 
@@ -53,7 +86,9 @@ module.exports.insertCartItem = async (req, res) => {
 // update cart item
 module.exports.updateCartItem = async (req, res) => {
     try {
-        const accountID = parseInt(req.body.accountID);
+        const { decoded } = res.locals.auth;
+
+        const accountID = parseInt(decoded.account_id);
         const productID = parseInt(req.body.productID);
         const quantity = parseInt(req.body.quantity);
 
@@ -73,11 +108,7 @@ module.exports.updateCartItem = async (req, res) => {
 
         if (!toBeUpdated) return res.status(404).send();
 
-        if (toBeUpdated.quantity === 1) {
-            await updateCartItem(toBeUpdated, quantity);
-        } else {
-            await deleteCartItem(accountID, productID);
-        }
+        await updateCartItem(toBeUpdated, quantity);
 
         return res.status(204).send();
 
@@ -90,7 +121,9 @@ module.exports.updateCartItem = async (req, res) => {
 // clear cart item
 module.exports.deleteCartItem = async (req, res) => {
     try {
-        const accountID = parseInt(req.body.accountID);
+        const { decoded } = res.locals.auth;
+
+        const accountID = parseInt(decoded.account_id);
         const productID = parseInt(req.body.productID);
 
         const toBeDeleted = await findCartItemByAccountIDAndProductID(accountID, productID);
@@ -109,7 +142,9 @@ module.exports.deleteCartItem = async (req, res) => {
 // clear entire cart
 module.exports.deleteAllCartItemByAccountID = async (req, res) => {
     try {
-        const accountID = parseInt(req.body.accountID);
+        const { decoded } = res.locals.auth;
+
+        const accountID = parseInt(decoded.account_id);
 
         const cartExist = await findCartItemsByAccountID(accountID);
 
