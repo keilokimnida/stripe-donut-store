@@ -36,6 +36,9 @@ module.exports.insertCartItem = async (req, res) => {
             message: "Invalid parameter \"productID\""
         });
 
+        await insertCartItem(accountID, productID);
+        return res.status(201).send("Cart item inserted successfully!");
+
     } catch (error) {
         console.log(error);
         return res.status(500).send("Error in controller > cart.js! " + error);
