@@ -10,41 +10,55 @@
             height: 150px;
         }
     }
+
     &__Info {
         display: flex;
         justify-content: center;
         flex-direction: column;
+
         h1 {
             font-size: $font-medium !important;
             font-weight: bold;
             color: $stripe-text-dark;
         }
+
         h3 {
             font-size: $font-small;
             font-weight: 500;
             color: $stripe-secondary;
         }
+
         h2 {
             font-size: $font-small;
             font-weight: bold;
             color: $stripe-text-dark;
         }
+
         .c-Cart-items__Qty {
             margin-top: 20px;
         }
     }
+
     &__Delete {
         display: flex;
         justify-content: center;
         flex-direction: column;
-        svg {
-            cursor: pointer;
-            &:hover {
-                opacity: 0.9;
-            }
-            &:active {
-                opacity: 0.7;
+
+        .l-Delete {
+            svg {
+                cursor: pointer;
+                position: relative;
+
+                &:hover {
+                    opacity: 0.9;
+                }
+
+                &:active {
+                    opacity: 0.7;
+                }
             }
         }
+
+
     }
 }

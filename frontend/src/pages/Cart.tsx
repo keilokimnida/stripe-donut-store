@@ -113,7 +113,7 @@ const Cart: React.FC = () => {
                     pauseOnHover
                 />
                 <Title title="Cart" />
-                <Header />
+                <Header rerender={rerender}/>
                 <div className="c-Cart">
                     {
                         token ?

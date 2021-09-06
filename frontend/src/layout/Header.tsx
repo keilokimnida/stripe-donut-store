@@ -12,12 +12,13 @@ import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 import config from '../config/config';
 import jwt_decode from "jwt-decode";
+import Tooltip from '@material-ui/core/Tooltip';
 
 interface Props {
     rerender?: boolean;
 };
 
-const Header: React.FC<Props> = ({rerender}) => {
+const Header: React.FC<Props> = ({ rerender }) => {
 
     // https://stackoverflow.com/questions/12710905/how-do-i-dynamically-assign-properties-to-an-object-in-typescript
     // This will allow us to dynamically assign properties to object in typescript
@@ -31,7 +32,7 @@ const Header: React.FC<Props> = ({rerender}) => {
 
     const history = useHistory();
     const token: string | null = getToken();
-    let accountID: string; 
+    let accountID: string;
     if (token) {
         const decodedToken: LooseObject = jwt_decode(token!);
         accountID = decodedToken.account_id;
@@ -43,7 +44,7 @@ const Header: React.FC<Props> = ({rerender}) => {
 
     useEffect(() => {
         let componentMounted = true;
-     
+
         if (token) {
             axios.get(`${config.baseUrl}/cart`, {
                 headers: {
@@ -54,7 +55,6 @@ const Header: React.FC<Props> = ({rerender}) => {
                     console.log(res);
                     const data = res.data;
                     if (componentMounted) {
-                        console.log("data" + data);
                         if (data.length !== 0) {
                             setIsCartUsed(() => true);
                         } else {
@@ -103,16 +103,21 @@ const Header: React.FC<Props> = ({rerender}) => {
                     </div>
                     <div className="c-Header__Icons">
                         <div className="c-Header__Cart">
-                            <NavLink to="/cart">
-                                <Badge color="secondary" variant="dot" invisible={!isCartUsed}>
-                                    <IconContext.Provider value={{ color: "black", size: "21px" }}>
-                                        <FaIcons.FaShoppingCart />
-                                    </IconContext.Provider>
-                                </Badge>
-                            </NavLink>
+                            <Tooltip title="Cart" arrow>
+                                <NavLink to="/cart">
+                                    <Badge color="secondary" variant="dot" invisible={!isCartUsed}>
+                                        <IconContext.Provider value={{ color: "black", size: "21px" }}>
+                                            <FaIcons.FaShoppingCart />
+                                        </IconContext.Provider>
+                                    </Badge>
+                                </NavLink>
+                            </Tooltip>
+
                         </div>
                         <div className="c-Header__Account">
-                            <div className="c-Header__Avatar" onClick={handleProfilePicClick}></div>
+                            <Tooltip title="Account" arrow>
+                                <div className="c-Header__Avatar" onClick={handleProfilePicClick}></div>
+                            </Tooltip>
                             {
                                 isProfilePopUpOpen ?
                                     <div className="l-Header__Profile-pop-up">
