@@ -111,10 +111,18 @@ const ProductDetails: React.FC<Props> = ({ match }) => {
         })
             .then((res) => {
                 console.log(res);
-                setRerender((prevState) => !prevState)
+                setRerender((prevState) => !prevState);
+                toast.success('Successfully Added Item to Cart!');
             })
             .catch((err) => {
                 console.log(err);
+                let errCode = "Error!";
+                let errMsg = "Error!"
+                if (err.response !== undefined) {
+                    errCode = err.response.status;
+                    errMsg = err.response.data.message;
+                }
+                toast.error(<>Error Code: <b>{errCode}</b><br />Message: <b>{errMsg}</b></>);
             });
     };
 
@@ -126,10 +134,18 @@ const ProductDetails: React.FC<Props> = ({ match }) => {
         })
             .then((res) => {
                 console.log(res);
-                setRerender((prevState) => !prevState)
+                setRerender((prevState) => !prevState);
+                toast.success('Successfully Removed Item from Cart!');
             })
             .catch((err) => {
                 console.log(err);
+                let errCode = "Error!";
+                let errMsg = "Error!"
+                if (err.response !== undefined) {
+                    errCode = err.response.status;
+                    errMsg = err.response.data.message;
+                }
+                toast.error(<>Error Code: <b>{errCode}</b><br />Message: <b>{errMsg}</b></>);
             });
     };
 
@@ -166,7 +182,7 @@ const ProductDetails: React.FC<Props> = ({ match }) => {
                                         <Skeleton variant="text" width={"50%"} />
                                     </article>
                                     <div className="c-Product-details__Btns ">
-                                        <Skeleton variant="rect" height = {42} width={"100%"} />
+                                        <Skeleton variant="rect" height={42} width={"100%"} />
                                     </div>
                                 </div>
                             </>
