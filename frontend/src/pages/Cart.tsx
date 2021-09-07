@@ -233,7 +233,8 @@ const Cart: React.FC = () => {
                 </div>
             </div>
         </>
-    )
+    
+    );
 }
 
 export default Cart;

@@ -26,7 +26,15 @@ const CartItem: React.FC<Props> = ({ name, unitPrice, totalPrice, quantity, prod
     const [qty, setQty] = useState<number | null>(null);
 
     useEffect(() => {
-        setQty(() => quantity);
+        let componentMounted = true;
+
+        if (componentMounted) {
+            setQty(() => quantity);
+        }
+        
+        return (() => {
+            componentMounted = false;
+        });
     }, []);
 
     // Handler

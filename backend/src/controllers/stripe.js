@@ -1,9 +1,11 @@
+const { createPaymentIntent } = require('../services/stripe');
+
 // Get cart by account id
 module.exports.createPaymentIntent = async (req, res) => {
     try {
 
-        const { items } = req.body;
-        const paymentIntent = await createPaymentIntent(items);
+        const { products } = req.body;
+        const paymentIntent = await createPaymentIntent(products);
 
         return res.status(200).send({
             clientSecret: paymentIntent.client_secret

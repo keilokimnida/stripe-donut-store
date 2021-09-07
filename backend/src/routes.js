@@ -21,7 +21,8 @@ module.exports = router => {
 
     // STRIPE PAYMENT
     // With reference to https://stripe.com/docs/payments/integration-builder
-    router.post("/api/v1/create-payment-intent", isLoggedIn, stripeController.createPaymentIntent);
+    router.post("/api/v1/stripe/create-payment-intent", isLoggedIn, stripeController.createPaymentIntent);
+    // router.get("/api/v1/stripe/check-payment-methods", isLoggedIn);
 
     // ACCOUNT
     router.get("/api/v1/account/:accountID", isLoggedIn, accountController.findAccountByID);

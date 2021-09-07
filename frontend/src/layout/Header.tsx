@@ -80,8 +80,6 @@ const Header: React.FC<Props> = ({ rerender }) => {
 
     // Handler
     const handleProfilePicClick = (): void => {
-        console.log("this ran");
-
         setIsProfilePopUpOpen((prevState) => !prevState);
     };
 

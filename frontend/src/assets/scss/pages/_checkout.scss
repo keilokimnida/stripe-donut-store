@@ -1,0 +1,158 @@
+.c-Checkout {
+    width: 75%;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+
+    &__Left {
+        flex: 1;
+        margin-right: 20px;
+        margin-top: 50px;
+
+        h1 {
+            font-size: $font-large;
+            font-weight: bold;
+            color: $stripe-text-dark;
+        }
+        .c-Left {
+            &__Billing-info {
+                h2 {
+                    margin-top: 20px;
+                    font-size: $font-medium;
+                    font-weight: bold;
+                    color: $stripe-text-dark;
+                }
+            }
+
+            &__Card-info {
+                h2 {
+                    margin-top: 20px;
+                    font-size: $font-medium;
+                    font-weight: bold;
+                    color: $stripe-text-dark;
+                }
+            }
+        }
+        button {
+            margin-top: 20px;
+            width: 100%;
+            cursor: pointer;
+            box-shadow: none;
+            background-color: $stripe-purple;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            &:hover {
+                opacity: 0.9;
+            }
+
+            &:active {
+                opacity: 0.7;
+            }
+
+            &:disabled {
+                opacity: 0.7;
+                cursor: not-allowed;
+            }
+            .spinner-border {
+                width: 20px;
+                height: 20px;
+            }
+            span {
+                padding-right: 10px;
+            }
+        }
+        button:nth-of-type(2) {
+            background-color: $stripe-primary;
+        }
+
+    }
+
+    &__Right {
+        flex: 1;
+        margin-left: 20px;
+        margin-top: 50px;
+
+        h1 {
+            font-size: $font-large;
+            font-weight: bold;
+            color: $stripe-text-dark;
+        }
+
+        .l-Checkout__Checkout-card {
+            margin-top: 20px;
+
+            .c-Checkout-card {
+                &__Info {
+                    .c-Checkout-card__Item-sub-total {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+
+                        h2 {
+                            font-size: $font-small;
+                            font-weight: bold;
+                            color: $stripe-text-dark;
+                        }
+                    }
+
+                    .c-Checkout-card__Sub-total {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+
+                        h1 {
+                            font-size: $font-small;
+                            font-weight: bold;
+                            color: $stripe-text-dark;
+                        }
+
+                        h2 {
+                            font-size: $font-small;
+                            font-weight: bold;
+                            color: $stripe-text-dark;
+                        }
+                    }
+
+                    .c-Checkout-card__Grand-total {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+
+                        h1 {
+                            font-size: $font-small;
+                            font-weight: bold;
+                            color: $stripe-text-dark;
+                        }
+
+                        h2 {
+                            font-size: $font-small;
+                            font-weight: bold;
+                            color: $stripe-text-dark;
+                        }
+                    }
+                }
+
+                button {
+                    margin-top: 20px;
+                    width: 100%;
+                    cursor: pointer;
+                    box-shadow: none;
+                    background-color: $stripe-purple;
+                    color: white;
+
+                    &:hover {
+                        opacity: 0.9;
+                    }
+
+                    &:active {
+                        opacity: 0.7;
+                    }
+                }
+            }
+        }
+    }
+
+}

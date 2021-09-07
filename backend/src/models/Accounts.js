@@ -35,6 +35,11 @@ const Accounts = db.define(
                 model: Membership,
                 key: "membership_id"
             }
+        },
+        stripe_customer_id: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            allowNull: true,
+            unique: true
         }
     },
     {
