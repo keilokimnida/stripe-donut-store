@@ -97,7 +97,7 @@ const Checkout: React.FC = () => {
                         });
 
                         // Check if user has any payment types stored already
-                        const paymentMethods = await axios.get(`${config.baseUrl}/stripe/check-payment-methods/${cartData.account.stripe_customer_id}`, {
+                        const paymentMethods = await axios.get(`${config.baseUrl}/stripe/payment_methods/${cartData.account.stripe_customer_id}`, {
                             headers: {
                                 'Authorization': `Bearer ${token}`
                             }
@@ -118,7 +118,8 @@ const Checkout: React.FC = () => {
                         // If there are no payment intent
                         if (cartData.account.stripe_payment_intent_id === null) {
                             // Retrieve client secret here
-                            const clientSecretRes: LooseObject | null = await axios.post(`${config.baseUrl}/stripe/create-payment-intent`, {}, {
+                            // Set payment intent initial amount
+                            const clientSecretRes: LooseObject | null = await axios.post(`${config.baseUrl}/stripe/payment_intents`, {}, {
                                 headers: {
                                     'Authorization': `Bearer ${token}`
                                 }
@@ -127,6 +128,14 @@ const Checkout: React.FC = () => {
                             console.log(clientSecretRes);
                             setClientSecret(() => clientSecretRes!.data.clientSecret);
                         } else {
+                            // Update payment intent amount
+                            await axios.put(`${config.baseUrl}/stripe/payment_intents`, {
+                                paymentIntentID: cartData.account.stripe_payment_intent_id
+                            }, {
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            });
                             console.log(cartData.account.stripe_payment_intent_client_secret)
                             setClientSecret(() => (cartData.account.stripe_payment_intent_client_secret));
                         }
@@ -255,7 +264,12 @@ const Checkout: React.FC = () => {
                                     </div>
                                     <div className="c-Left__Card-info">
                                         <h2>Payment Information</h2>
-                                        <CardElement options={cardStyle} onChange={handleCardInputChange} />
+                                        <div className="l-Card-info__Card-element">
+                                            <div className="c-Card-info__Card-element">
+                                                {/* Card input is rendered here */}
+                                                <CardElement options={cardStyle} onChange={handleCardInputChange} />
+                                            </div>
+                                        </div>
                                         {/* Show any error that happens when processing the payment */}
                                         {paymentError && (
                                             <div className="card-error" role="alert">

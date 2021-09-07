@@ -1,5 +1,6 @@
 const { findCartItemsByAccountID, insertCartItem, findCartItemByAccountIDAndProductID, updateCartItem, deleteCartItem, deleteAllCartItemByAccountID } = require('../services/cart');
-const { findAccountByID } = require("../services/account");
+const { findAccountByID, updateAccountByID } = require("../services/account");
+const { cancelPaymentIntent } = require("../services/stripe");
 
 // Get cart by account id
 module.exports.findCartItemsByAccountID = async (req, res) => {
@@ -12,7 +13,7 @@ module.exports.findCartItemsByAccountID = async (req, res) => {
             message: "Invalid parameter \"accountID\""
         });
 
-        const account = await findAccountByID(accountID); 
+        const account = await findAccountByID(accountID);
         if (!account) return res.status(404).json({
             message: `\"cart\" not found for ${accountID}`
         });
@@ -135,8 +136,24 @@ module.exports.deleteCartItem = async (req, res) => {
         const accountID = parseInt(decoded.account_id);
         const productID = parseInt(req.params.productID);
 
+        // Check if item exists in account ID's cart
         const toBeDeleted = await findCartItemByAccountIDAndProductID(accountID, productID);
         if (!toBeDeleted) return res.status(404).send();
+
+        // Check how many cart items are associated to user
+        const cart = await findCartItemsByAccountID(accountID);
+        if (!cart) return res.status(404).json({
+            message: `\"cart\" not found for ${accountID}`
+        });
+
+        // If cart has no more item, clear payment intent
+        if (cart.length === 1 && toBeDeleted.account.stripe_payment_intent_id) {
+            await cancelPaymentIntent(toBeDeleted.account.stripe_payment_intent_id);
+            await updateAccountByID(accountID, {
+                stripe_payment_intent_id: null,
+                stripe_payment_intent_client_secret: null
+            })
+        }
 
         await deleteCartItem(accountID, productID);
 

@@ -33,6 +33,16 @@
                     color: $stripe-text-dark;
                 }
 
+                .l-Card-info__Card-element {
+                    margin-top: 20px;
+
+                    .c-Card-info__Card-element {
+                        border: 1px solid black;
+                        border-radius: 5px;
+                        padding: 9px;
+                    }
+                }
+
                 .c-Card-info__Save-card {
                     margin-top: 20px;
                     display: flex;
@@ -44,6 +54,7 @@
                         font-weight: bold;
                         color: $stripe-text-dark;
                     }
+
                     input[type=checkbox] {
                         transform: scale(1.2);
                         outline: none;

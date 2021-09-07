@@ -19,3 +19,11 @@ module.exports.findStripeCustomerPaymentMethods = (stripeCustomerID) => stripe.p
   customer: stripeCustomerID,
   type: 'card'
 });
+
+module.exports.updatePaymentIntent = (paymentIntentID, totalPrice) => stripe.paymentIntents.update(
+  paymentIntentID, {
+    amount: totalPrice,
+    currency: "sgd"
+});
+
+module.exports.cancelPaymentIntent = (paymentIntentID) => stripe.paymentIntents.cancel(paymentIntentID);

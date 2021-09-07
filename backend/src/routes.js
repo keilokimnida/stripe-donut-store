@@ -22,9 +22,11 @@ module.exports = router => {
 
     // STRIPE PAYMENT
     // With reference to https://stripe.com/docs/payments/integration-builder
-    router.post("/api/v1/stripe/create-payment-intent", isLoggedIn, calculateProductsTotalPrice, stripeController.createPaymentIntent);
-    router.get("/api/v1/stripe/check-payment-methods/:stripeCustomerID", isLoggedIn, stripeController.findStripeCustomerPaymentMethods);
-
+    // & https://stripe.com/docs/api/payment_intents
+    router.post("/api/v1/stripe/payment_intents", isLoggedIn, calculateProductsTotalPrice, stripeController.createPaymentIntent);
+    router.put("/api/v1/stripe/payment_intents", isLoggedIn, calculateProductsTotalPrice, stripeController.updatePaymentIntent);
+    router.get("/api/v1/stripe/payment_methods/:stripeCustomerID", isLoggedIn, stripeController.findStripeCustomerPaymentMethods);
+   
     // ACCOUNT
     router.get("/api/v1/account/:accountID", isLoggedIn, accountController.findAccountByID);
     

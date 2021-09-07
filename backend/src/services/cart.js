@@ -21,7 +21,8 @@ module.exports.findCartItemByAccountIDAndProductID = (accountID, productID) => C
     where: {
         fk_account_id: accountID,
         fk_product_id: productID
-    }
+    },
+    include: ["account"]
 });
 
 // Update cart item

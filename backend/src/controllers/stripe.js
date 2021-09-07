@@ -1,4 +1,4 @@
-const { createPaymentIntent, createStripeCustomer, findStripeCustomerPaymentMethods } = require('../services/stripe');
+const { createPaymentIntent, createStripeCustomer, findStripeCustomerPaymentMethods, updatePaymentIntent } = require('../services/stripe');
 const { findAccountByID, updateAccountByID } = require('../services/account');
 
 // Create payment intent
@@ -68,6 +68,25 @@ module.exports.findStripeCustomerPaymentMethods = async (req, res) => {
         const customer = await findStripeCustomerPaymentMethods(stripeCustomerID);
 
         return res.status(200).send(customer);
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Error in controller > stripe.js! " + error);
+    }
+};
+
+// Update payment intent
+module.exports.updatePaymentIntent = async (req, res) => {
+    try {
+        const { paymentIntentID } = req.body;
+        if (!paymentIntentID) return res.status(400).json({
+            message: "Cannot find parameter \"paymentIntentID\""
+        });
+        const totalPrice = res.locals.cartInfo;
+
+        await updatePaymentIntent(paymentIntentID, totalPrice);
+
+        return res.status(204).send();
 
     } catch (error) {
         console.log(error);

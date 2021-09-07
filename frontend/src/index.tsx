@@ -16,5 +16,5 @@ ReactDOM.render(
       <Routes />
     </Elements>
   </>,
-  document.getElementById('eISO-root')
+  document.getElementById('stripe-donut-root')
 );
