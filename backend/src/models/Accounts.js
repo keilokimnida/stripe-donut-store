@@ -37,7 +37,17 @@ const Accounts = db.define(
             }
         },
         stripe_customer_id: {
-            type: DataTypes.INTEGER.UNSIGNED,
+            type: DataTypes.STRING(255),
+            allowNull: false,
+            unique: true
+        },
+        stripe_payment_intent_id: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            unique: true
+        },
+        stripe_payment_intent_client_secret: {
+            type: DataTypes.STRING(255),
             allowNull: true,
             unique: true
         }

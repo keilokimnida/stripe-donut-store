@@ -58,7 +58,7 @@ const Header: React.FC<Props> = ({ rerender }) => {
                     console.log(res);
                     const data = res.data;
                     if (componentMounted) {
-                        if (data.length !== 0) {
+                        if (data.cart.length !== 0) {
                             setIsCartUsed(() => true);
                         } else {
                             setIsCartUsed(() => false);

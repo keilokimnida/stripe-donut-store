@@ -31,7 +31,7 @@ const CartItem = db.define(
         quantity: {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
-        }
+        },
     },
     {
         tableName: "cart_item",

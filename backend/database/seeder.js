@@ -1,9 +1,12 @@
-// Model Imports
+// MODELS IMPORT
 const { Accounts } = require("../src/models/Accounts");
 const { Passwords } = require("../src/models/Passwords");
 const { Products } = require("../src/models/Products");
 const { CartItem } = require("../src/models/CartItem");
 const { Membership } = require("../src/models/Membership");
+
+// SERVICES IMPORT
+const { createStripeCustomer } = require("../src/services/stripe");
 
 // NPM modules import
 const faker = require("faker");
@@ -28,10 +31,14 @@ module.exports.seeder = async () => {
         }
         {
             // Create user
-            let firstname = faker.name.firstName();
-            let lastname = faker.name.lastName();
-            let username = `${firstname}_${lastname}`.toLowerCase();
-            let email = `${username}@stripedonut.com`;
+            const firstname = faker.name.firstName();
+            const lastname = faker.name.lastName();
+            const username = `${firstname}_${lastname}`.toLowerCase();
+            const email = `${username}@stripedonut.com`;
+            const fullName = lastname + " " + firstname;
+
+            const customer = await createStripeCustomer(email, fullName);
+            const stripeCustomerID = customer.id;
 
             await Accounts.create({
                 username,
@@ -42,10 +49,13 @@ module.exports.seeder = async () => {
                 passwords: [{
                     password: bcrypt.hashSync("123", 10)
                 }],
-                fk_membership_id: 1
+                fk_membership_id: 1,
+                stripe_customer_id: stripeCustomerID
             }, {
                 include: ["passwords"]
             });
+
+
         }
         {
             // Insert products

@@ -53,12 +53,12 @@ const Cart: React.FC = () => {
                 console.log(res);
                 const data = res.data;
                 if (componentMounted) {
-                    if (data.length !== 0) {
+                    if (data.cart.length !== 0) {
                         let subTotal = 0, grandTotal = 0;
 
                         // set cart array here
                         setCartArr(() => {
-                            return data.map((cartData: LooseObject, mapIndex: number) => {
+                            return data.cart.map((cartData: LooseObject, mapIndex: number) => {
                                 subTotal += cartData.quantity * parseFloat(cartData.product.product_price);
                                 return {
                                     quantity: cartData.quantity,

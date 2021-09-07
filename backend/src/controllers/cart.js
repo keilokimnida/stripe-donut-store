@@ -1,4 +1,5 @@
 const { findCartItemsByAccountID, insertCartItem, findCartItemByAccountIDAndProductID, updateCartItem, deleteCartItem, deleteAllCartItemByAccountID } = require('../services/cart');
+const { findAccountByID } = require("../services/account");
 
 // Get cart by account id
 module.exports.findCartItemsByAccountID = async (req, res) => {
@@ -11,12 +12,20 @@ module.exports.findCartItemsByAccountID = async (req, res) => {
             message: "Invalid parameter \"accountID\""
         });
 
+        const account = await findAccountByID(accountID); 
+        if (!account) return res.status(404).json({
+            message: `\"cart\" not found for ${accountID}`
+        });
+
         const cart = await findCartItemsByAccountID(accountID);
         if (!cart) return res.status(404).json({
             message: `\"cart\" not found for ${accountID}`
         });
 
-        return res.status(200).send(cart);
+        return res.status(200).send({
+            cart,
+            account
+        });
 
     } catch (error) {
         console.log(error);

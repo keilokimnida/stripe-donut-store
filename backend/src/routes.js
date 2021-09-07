@@ -8,6 +8,7 @@ const stripeController = require("./controllers/stripe");
 
 // MIDDLEWARES
 const { isLoggedIn } = require("./middlewares/login");
+const { calculateProductsTotalPrice } = require("./middlewares/payment");
 
 module.exports = router => {
 
@@ -21,8 +22,8 @@ module.exports = router => {
 
     // STRIPE PAYMENT
     // With reference to https://stripe.com/docs/payments/integration-builder
-    router.post("/api/v1/stripe/create-payment-intent", isLoggedIn, stripeController.createPaymentIntent);
-    // router.get("/api/v1/stripe/check-payment-methods", isLoggedIn);
+    router.post("/api/v1/stripe/create-payment-intent", isLoggedIn, calculateProductsTotalPrice, stripeController.createPaymentIntent);
+    router.get("/api/v1/stripe/check-payment-methods/:stripeCustomerID", isLoggedIn, stripeController.findStripeCustomerPaymentMethods);
 
     // ACCOUNT
     router.get("/api/v1/account/:accountID", isLoggedIn, accountController.findAccountByID);

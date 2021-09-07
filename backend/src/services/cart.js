@@ -6,7 +6,7 @@ module.exports.findCartItemsByAccountID = (accountID) => CartItem.findAll({
     where: {
         fk_account_id: accountID
     },
-    include: ["product", "account"]
+    include: ["product"]
 });
 
 // Insert cart item

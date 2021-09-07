@@ -52,7 +52,7 @@ const Checkout: React.FC = () => {
     const [paymentError, setPaymentError] = useState<string | null>(null);
     const [paymentProcessing, setPaymentProcessing] = useState(false);
     const [paymentDisabled, setPaymentDisabled] = useState(true);
-    const [clientSecret, setClientSecret] = useState('');
+    const [clientSecret, setClientSecret] = useState<string | null>(null);
     const stripe = useStripe();
     const elements = useElements();
 
@@ -71,11 +71,11 @@ const Checkout: React.FC = () => {
 
                 const cartData = cartResponse.data;
                 if (componentMounted) {
-                    if (cartData.length !== 0) {
+                    if (cartData.cart.length !== 0) {
                         let subTotal = 0, grandTotal = 0;
                         // set cart array here
                         setCartArr(() => {
-                            return cartData.map((cartDataObj: LooseObject, mapIndex: number) => {
+                            return cartData.cart.map((cartDataObj: LooseObject, mapIndex: number) => {
                                 subTotal += cartDataObj.quantity * parseFloat(cartDataObj.product.product_price);
                                 return {
                                     quantity: cartDataObj.quantity,
@@ -96,21 +96,41 @@ const Checkout: React.FC = () => {
                             }
                         });
 
+                        // Check if user has any payment types stored already
+                        const paymentMethods = await axios.get(`${config.baseUrl}/stripe/check-payment-methods/${cartData.account.stripe_customer_id}`, {
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
 
-                        // // Check if user has any payment types stored already
-                        // const paymentMethods = await axios.get(`${config.baseUrl}/check-payment-methods`, {
-                        //     headers: {
-                        //         'Authorization': `Bearer ${token}`
-                        //     }
-                        // });
+                        const paymentMethodsData = paymentMethods.data;
 
-                        // const paymentMethodsData = paymentMethods.data;
+                        console.log(paymentMethodsData);
 
-                        // console.log(paymentMethodsData);
-                        // // If there's no current payment methods
-                        // if (paymentMethodsData === "") {
+                        // If there's payment methods set up already
+                        if (paymentMethodsData.data.length > 0) {
+                            console.log("there are already existing payment methods!")
+                        } else {
+                            // This else block can be removed
+                            console.log("there are no existing payment methods!")
+                        }
 
-                        // }
+                        // If there are no payment intent
+                        if (cartData.account.stripe_payment_intent_id === null) {
+                            // Retrieve client secret here
+                            const clientSecretRes: LooseObject | null = await axios.post(`${config.baseUrl}/stripe/create-payment-intent`, {}, {
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            });
+                            console.log("clientSecretRes");
+                            console.log(clientSecretRes);
+                            setClientSecret(() => clientSecretRes!.data.clientSecret);
+                        } else {
+                            console.log(cartData.account.stripe_payment_intent_client_secret)
+                            setClientSecret(() => (cartData.account.stripe_payment_intent_client_secret));
+                        }
+
                     } else {
                         setCartArr(() => []);
                     }
