@@ -3,11 +3,11 @@
     margin: auto;
     display: flex;
     flex-direction: row;
-    margin-top: 50px;
 
     &__Left {
         flex: 1;
         margin-right: 20px;
+        margin-top: 50px;
 
         h1 {
             font-size: $font-large;
@@ -23,6 +23,7 @@
     &__Right {
         flex: 1;
         margin-left: 20px;
+        margin-top: 50px;
 
         h1 {
             font-size: $font-large;

@@ -13,6 +13,7 @@ import axios from 'axios';
 import config from '../config/config';
 import jwt_decode from "jwt-decode";
 import Tooltip from '@material-ui/core/Tooltip';
+import useComponentVisible from '../hooks/useComponentVisible';
 
 interface Props {
     rerender?: boolean;
@@ -38,9 +39,11 @@ const Header: React.FC<Props> = ({ rerender }) => {
         accountID = decodedToken.account_id;
     }
 
+
     // State declaration
     const [isProfilePopUpOpen, setIsProfilePopUpOpen] = useState<boolean>(false);
     const [isCartUsed, setIsCartUsed] = useState<boolean>(false);
+    const { ref } = useComponentVisible(isProfilePopUpOpen, setIsProfilePopUpOpen);
 
     useEffect(() => {
         let componentMounted = true;
@@ -77,6 +80,8 @@ const Header: React.FC<Props> = ({ rerender }) => {
 
     // Handler
     const handleProfilePicClick = (): void => {
+        console.log("this ran");
+
         setIsProfilePopUpOpen((prevState) => !prevState);
     };
 
@@ -114,13 +119,13 @@ const Header: React.FC<Props> = ({ rerender }) => {
                             </Tooltip>
 
                         </div>
-                        <div className="c-Header__Account">
+                        <div className="c-Header__Account" ref={ref}>
                             <Tooltip title="Account" arrow>
                                 <div className="c-Header__Avatar" onClick={handleProfilePicClick}></div>
                             </Tooltip>
                             {
                                 isProfilePopUpOpen ?
-                                    <div className="l-Header__Profile-pop-up">
+                                    <div className="l-Header__Profile-pop-up" >
                                         <div className="c-Header__Profile-pop-up">
                                             <button onClick={() => history.push("/account")}>My Account</button>
                                             <hr />

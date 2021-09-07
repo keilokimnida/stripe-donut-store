@@ -9,6 +9,6 @@ export const getToken = (): string | null => {
 }
 
 // Clear user's localStorage
-export const clearLocalStorage = () => {
+export const clearLocalStorage = (): void => {
     localStorage.clear();
 }
