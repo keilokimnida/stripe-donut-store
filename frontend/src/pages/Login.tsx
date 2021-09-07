@@ -18,7 +18,8 @@ const Login: React.FC = () => {
     });
 
     // Handlers
-    const handleBtnClick = () => {
+    const handleFormSubmit = (event: React.ChangeEvent<HTMLInputElement>) => {
+        event.preventDefault();
         console.log("this was ran");
         axios.post(`${config.baseUrl}/login`, {
             "username": inputValues.username,
@@ -65,7 +66,7 @@ const Login: React.FC = () => {
             <Title title = "Login"/>
             <div className="c-Login">
                 {/* Card Component */}
-                <div className="l-Login__Card">
+                <form className="l-Login__Card" onSubmit={(event: any) => handleFormSubmit(event)}>
                     <div className="c-Login__Card">
                         <div className="c-Card__Header">
                             <h1>Login</h1>
@@ -80,9 +81,9 @@ const Login: React.FC = () => {
                             <label htmlFor="password">Password</label>
                             <input type="password" name="password" value={inputValues.password} placeholder="Enter password" onChange={handleInputChange} />
                         </div>
-                        <button type="button" className="c-Btn" onClick={handleBtnClick}>Login</button>
+                        <button type="submit" className="c-Btn">Login</button>
                     </div>
-                </div>
+                </form>
             </div>
         </>
     )

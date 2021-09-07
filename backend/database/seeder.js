@@ -51,7 +51,7 @@ module.exports.seeder = async () => {
             // Insert products
             for (let i = 0; i < 10; i++) {
                 let price = Math.round(faker.commerce.price() / 10) + 0.9;
-                let productName = faker.lorem.word();
+                let productName = faker.lorem.word() + faker.lorem.word();
                 productName = productName.charAt(0).toUpperCase() + productName.slice(1) + " Donut"; // capitalize the word
                 let productDescription = faker.lorem.paragraph();
 

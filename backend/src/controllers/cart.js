@@ -41,11 +41,11 @@ module.exports.findCartItemByAccountIDAndProductID = async (req, res) => {
         });
 
         const cartItem = await findCartItemByAccountIDAndProductID(accountID, productID);
-        if (!cartItem) return res.status(404).json({
+        if (!cartItem) return res.status(204).json({
             message: `\"cartitem\" not found for ${accountID}`
         });
 
-        return res.status(204).send();
+        return res.status(200).send(cartItem);
 
     } catch (error) {
         console.log(error);

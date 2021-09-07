@@ -96,6 +96,7 @@ const Checkout: React.FC = () => {
                             }
                         });
 
+
                         // // Check if user has any payment types stored already
                         // const paymentMethods = await axios.get(`${config.baseUrl}/check-payment-methods`, {
                         //     headers: {
@@ -136,6 +137,7 @@ const Checkout: React.FC = () => {
 
 
     const cardStyle = {
+        hidePostalCode: true,
         style: {
             base: {
                 color: "#32325d",
@@ -162,7 +164,7 @@ const Checkout: React.FC = () => {
         } else {
             setPaymentDisabled(true);
         }
-       
+
         setPaymentError(event.error ? event.error.message : "");
     };
 
@@ -189,7 +191,11 @@ const Checkout: React.FC = () => {
     };
 
     const handleInputChange = () => {
-        
+
+    };
+
+    const handleCheckboxChange = () => {
+        setSaveCard((prevState) => !prevState);
     };
 
     return (
@@ -236,6 +242,11 @@ const Checkout: React.FC = () => {
                                                 {paymentError}
                                             </div>
                                         )}
+                                        <div className="c-Card-info__Save-card">
+                                            <input name="saveCard" type="checkbox" onChange={handleCheckboxChange} checked={saveCard} value="saveCard" />
+                                            <label htmlFor="saveCard">Save for Future Payments</label>
+                                        </div>
+
                                     </div>
                                     <button
                                         disabled={paymentProcessing || paymentDisabled}
@@ -244,9 +255,9 @@ const Checkout: React.FC = () => {
                                     >
                                         {paymentProcessing ? (
                                             <>
-                                             <span> Processing Payment...</span>
-                                             <Spinner animation="border" role="status"/>
-                                             </>
+                                                <span> Processing Payment...</span>
+                                                <Spinner animation="border" role="status" />
+                                            </>
                                         ) : (
                                             <>
                                                 Pay S${orderSummary.grandTotal ? orderSummary.grandTotal.toFixed(2) : "Error"}

@@ -1,11 +1,12 @@
 const { CartItem } = require("../models/CartItem");
+const { Account } = require("../models/Accounts");
 
 // Get cart by account id
 module.exports.findCartItemsByAccountID = (accountID) => CartItem.findAll({
     where: {
         fk_account_id: accountID
     },
-    include: ["product"]
+    include: ["product", "account"]
 });
 
 // Insert cart item

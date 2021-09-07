@@ -79,7 +79,11 @@ const ProductDetails: React.FC<Props> = ({ match }) => {
             .then((res) => {
                 console.log(res);
                 if (componentMounted) {
-                    setInCartAlready(() => true);
+                    if (res.data === "") {
+                        setInCartAlready(() => false);
+                    } else {
+                        setInCartAlready(() => true);
+                    }
                     setTimeout(() => {
                         setLoading(() => false);
                     }, 300);
@@ -88,7 +92,6 @@ const ProductDetails: React.FC<Props> = ({ match }) => {
             .catch((err) => {
                 console.log(err);
                 if (componentMounted) {
-                    setInCartAlready(() => false);
                     setTimeout(() => {
                         setLoading(() => false);
                     }, 300);
