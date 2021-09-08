@@ -1,13 +1,12 @@
 # Stripe Donut
 
-Pet project for the Sep/Oct 2021 holidays! Simple store that sells premium donuts, and offers exclusive products to users who have subscribed for a membership.
+Pet project for Sep/Oct 2021 holiday! Simple store that sells premium donuts, and offers exclusive products to users who have subscribed for a membership.
 
 **Learning Objectives:**
 1. Integrate React & NodeJS application with Stripe
-    1. Learn how to use Stripe Payment Intent api
+    1. Learn how to use Stripe to receive Card Payment
     2. Learn how to use Stripe Subscription and Invoicing apis
-    3. Learn how to use Stripe Element to receive Card Payment
-    4. Learn how to add Google pay & Apple Pay payment methods
+    3. Learn how to save card during checkout for future payments
 2. Typescript with React
 3. Sequelize
 4. Skeleton Loading
@@ -16,16 +15,19 @@ Pet project for the Sep/Oct 2021 holidays! Simple store that sells premium donut
 
 ## Stripe
 
-Set up a an account on [Stripe](https://stripe.com/en-sg).
+- Set up an account on [Stripe](https://stripe.com/en-sg)
+- Your Stripe account will contain your **test** secret and public API keys which will be pasted in backend `.env` file later
+- Monitor and test stripe transactions using the dashboard
+- More info can be found in their docs [Overview](https://stripe.com/docs) [API docs](https://stripe.com/docs/api)
 
 ## Frontend
 
-Create a new `.env` file and paste this inside:
+- Create a new `.env` file and paste this inside:
 
 ```
 
-    REACT_APP_BASEURL=http://localhost:8000/api/v1
-    REACT_APP_BASEURL_STRIPE_PK_TEST=
+REACT_APP_BASEURL=http://localhost:8000/api/v1
+REACT_APP_BASEURL_STRIPE_PK_TEST=
     
 ```
 

@@ -3,6 +3,7 @@ const { Passwords } = require("./src/models/Passwords");
 const { Products } = require("./src/models/Products");
 const { CartItem } = require("./src/models/CartItem");
 const { Membership } = require("./src/models/Membership");
+const { Receipts } = require("./src/models/Receipts");
 
 const express = require("express");
 const cors = require("cors");

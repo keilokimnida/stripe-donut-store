@@ -93,3 +93,4 @@ module.exports.updatePaymentIntent = async (req, res) => {
         return res.status(500).send("Error in controller > stripe.js! " + error);
     }
 };
+

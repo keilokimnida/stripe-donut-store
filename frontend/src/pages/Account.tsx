@@ -10,6 +10,12 @@ import axios from 'axios';
 import { NavLink } from 'react-router-dom';
 import LoggedOut from '../common/LoggedOut';
 import Skeleton from '@material-ui/lab/Skeleton';
+import BootstrapTable from 'react-bootstrap-table-next';
+import dayjs from 'dayjs';
+import MCSVG from "../assets/svg/MC.svg";
+import visaSVG from "../assets/svg/Visa_2021.svg";
+import amexSVG from "../assets/svg/Amex.svg";
+import { ReactSVG } from 'react-svg'
 
 const Account: React.FC = () => {
 
@@ -18,10 +24,10 @@ const Account: React.FC = () => {
     }
 
     interface accountDataInterface {
-        firstName: string;
-        lastName: string;
-        email: string;
-        username: string;
+        firstName: string | null;
+        lastName: string | null;
+        email: string | null;
+        username: string | null;
     }
 
     const toastTiming: number = config.toastTiming;
@@ -33,14 +39,16 @@ const Account: React.FC = () => {
     }
 
     // State declarations
-    const [accountData, setAccountData] = useState<accountDataInterface>({
-        firstName: "",
-        lastName: "",
-        email: "",
-        username: ""
+    const [profileData, setProfileData] = useState<accountDataInterface>({
+        firstName: null,
+        lastName: null,
+        email: null,
+        username: null
     });
     const [loading, setLoading] = useState<boolean>(true);
     const [editMode, setEditMode] = useState<boolean>(false);
+    const [paymentHistory, setPaymentHistory] = useState<[]>([]);
+    const [paymentMethods, setPaymentMethods] = useState<[]>([]);
 
     useEffect(() => {
         let componentMounted = true;
@@ -55,12 +63,32 @@ const Account: React.FC = () => {
                 console.log(res);
                 const data = res.data;
                 if (componentMounted) {
-                    setAccountData(() => ({
-                        firstName: data.firstname,
-                        lastName: data.lastname,
-                        email: data.email,
-                        username: data.username
-                    }));
+
+                    if (data.account && data.receipts) {
+                        setProfileData(() => ({
+                            firstName: data.account.firstname,
+                            lastName: data.account.lastname,
+                            email: data.account.email,
+                            username: data.account.username
+                        }));
+                        setPaymentHistory(() => data.receipts.map((receipt: any, index: number) => ({
+                            serialNo: index + 1,
+                            receiptID: receipt.receipt_id,
+                            amount: "S$" + receipt.amount,
+                            cardType: receipt.stripe_payment_method_card,
+                            cardLastFourDigit: "●●●● " + receipt.stripe_payment_method_last_four_digit,
+                            receiptUrl: receipt.stripe_receipt_url,
+                            createdAt: dayjs(new Date(receipt.created_at)).format("MMMM D, YYYY h:mm A"),
+                        })));
+                        setPaymentMethods(() => data.account.payment_accounts.map((paymentAccount: any, index: number) => ({
+                            serialNo: index + 1,
+                            paymentMethodID: paymentAccount.payment_methods_id,
+                            cardType: paymentAccount.stripe_card_type,
+                            cardLastFourDigit: "●●●● " + paymentAccount.stripe_card_last_four_digit,
+                            createdAt: dayjs(new Date(paymentAccount.created_at)).format("MMMM D, YYYY h:mm A")
+                        })));
+
+                    }
                     setTimeout(() => {
                         setLoading(() => false);
                     }, 300);
@@ -69,7 +97,7 @@ const Account: React.FC = () => {
             .catch((err) => {
                 console.log(err);
                 if (componentMounted) {
-                    setAccountData(() => ({
+                    setProfileData(() => ({
                         firstName: "Error",
                         lastName: "Error",
                         email: "Error",
@@ -85,6 +113,104 @@ const Account: React.FC = () => {
             componentMounted = false;
         });
     }, []);
+
+    const paymentHistoryColumn = [
+        {
+            dataField: 'receiptID',
+            text: 'Id',
+            hidden: true
+        },
+        {
+            dataField: 'serialNo',
+            text: '#',
+        },
+        {
+            dataField: 'amount',
+            text: 'Amount',
+        },
+        {
+            dataField: 'cardType',
+            text: 'Card Type',
+            formatter: (cell: any, row: any) => {
+                if (cell === "Visa") {
+                    return <ReactSVG
+                        src={visaSVG}
+                        className="c-Payment-history__SVG c-SVG__Visa"
+                    />
+                } else if (cell === "MasterCard") {
+                    return <ReactSVG
+                        src={MCSVG}
+                        className="c-Payment-history__SVG c-SVG__Master"
+                    />
+                } else if (cell === "American Express") {
+                    return <ReactSVG
+                        src={amexSVG}
+                        className="c-Payment-history__SVG c-SVG__Amex"
+                    />
+                } else {
+                    return cell;
+                }
+            }
+        },
+        {
+            dataField: 'cardLastFourDigit',
+            text: 'Last 4 Digit',
+        },
+        {
+            dataField: 'createdAt',
+            text: 'Paid on'
+        },
+        {
+            dataField: 'receiptUrl',
+            text: '',
+            formatter: (cell: any, row: any) => {
+                return <a href={cell} target="_blank" rel="noopener noreferrer">View Receipt</a>
+            }
+        }
+    ];
+    const paymentMethodsColumn = [
+        {
+            dataField: 'paymentMethodID',
+            text: 'Id',
+            hidden: true
+        },
+        {
+            dataField: 'serialNo',
+            text: '#',
+        },
+        {
+            dataField: 'cardType',
+            text: 'Card Type',
+            formatter: (cell: any, row: any) => {
+                if (cell === "Visa") {
+                    return <ReactSVG
+                        src={visaSVG}
+                        className="c-Payment-history__SVG c-SVG__Visa"
+                    />
+                } else if (cell === "MasterCard") {
+                    return <ReactSVG
+                        src={MCSVG}
+                        className="c-Payment-history__SVG c-SVG__Master"
+                    />
+                } else if (cell === "American Express") {
+                    return <ReactSVG
+                        src={amexSVG}
+                        className="c-Payment-history__SVG c-SVG__Amex"
+                    />
+                } else {
+                    return cell;
+                }
+            }
+        },
+        {
+            dataField: 'cardLastFourDigit',
+            text: 'Last 4 Digit',
+        },
+        {
+            dataField: 'createdAt',
+            text: 'Added on'
+        }
+    ];
 
     return (
         <>
@@ -125,25 +251,26 @@ const Account: React.FC = () => {
                                     </div>
                                 </div>
                                 :
-                                <div className="c-Account__Profile">
-                                    <h1>Profile</h1>
-                                    <hr />
-                                    <div className="c-Profile__Details">
-                                        <div className="c-Profile__Labels">
-                                            <label htmlFor="email">Email</label>
-                                            <label htmlFor="username">Username</label>
-                                            <label htmlFor="firstname">First Name</label>
-                                            <label htmlFor="lastname">Last Name</label>
+                                <>
+                                    {/* Profile */}
+                                    <div className="c-Account__Profile">
+                                        <h1>Profile</h1>
+                                        <hr />
+                                        <div className="c-Profile__Details">
+                                            <div className="c-Profile__Labels">
+                                                <label htmlFor="email">Email</label>
+                                                <label htmlFor="username">Username</label>
+                                                <label htmlFor="firstname">First Name</label>
+                                                <label htmlFor="lastname">Last Name</label>
+                                            </div>
+                                            <div className="c-Profile__Info">
+                                                <p>{profileData.email || "Error"}</p>
+                                                <p>{profileData.username || "Error"}</p>
+                                                <p>{profileData.firstName || "Error"}</p>
+                                                <p>{profileData.lastName || "Error"}</p>
+                                            </div>
                                         </div>
-                                        <div className="c-Profile__Info">
-                                            <p>{accountData.email}</p>
-                                            <p>{accountData.username}</p>
-                                            <p>{accountData.firstName}</p>
-                                            <p>{accountData.lastName}</p>
-                                        </div>
-
-                                    </div>
-                                    {/* <Formik
+                                        {/* <Formik
                             initialValues={{
                                 email: '',
                                 firstname: '',
@@ -162,7 +289,49 @@ const Account: React.FC = () => {
                             )
                             }
                         </Formik> */}
-                                </div>
+                                    </div>
+                                    {/* Payment methods */}
+                                    <div className="c-Account__Payment-method">
+                                        <h1>Payment Methods</h1>
+                                        <hr />
+                                        {
+                                            paymentMethods.length === 0 ?
+                                                <p>No Payment Methods Found!</p>
+                                                :
+                                                <BootstrapTable
+                                                    bordered={false}
+                                                    keyField="payment"
+                                                    data={paymentMethods}
+                                                    columns={paymentMethodsColumn}
+                                                />
+                                        }
+
+                                    </div>
+                                    {/* Payment history */}
+                                    <div className="c-Account__Payment-history">
+                                        <h1>Payment History</h1>
+                                        <hr />
+                                        <div className="c-Payment-history__Details">
+                                            {
+                                                paymentHistory.length === 0 ?
+                                                    <p>No Payment History Found!</p>
+                                                    :
+                                                    <BootstrapTable
+                                                        bordered={false}
+                                                        keyField="receiptID"
+                                                        data={paymentHistory}
+                                                        columns={paymentHistoryColumn}
+                                                    />
+                                            }
+                                        </div>
+                                    </div>
+                                    {/* Subscription */}
+                                    <div className="c-Account__Subscription">
+                                        <h1>Subscription</h1>
+                                        <hr />
+
+                                    </div>
+                                </>
                             :
                             <LoggedOut type="Manage Account" />
                     }

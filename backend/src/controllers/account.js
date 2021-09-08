@@ -1,4 +1,5 @@
 const { findAccountByID } = require('../services/account');
+const { findReceiptByAccountID } = require('../services/receipts');
 
 // Get account by ID
 
@@ -15,7 +16,12 @@ module.exports.findAccountByID = async (req, res) => {
             message: `\"accountID\" ${accountID} not found`
         });
 
-        return res.status(200).send(account);
+        const receipts = await findReceiptByAccountID(accountID);
+
+        return res.status(200).send({
+            account,
+            receipts
+        });
 
     } catch (error) {
         console.log(error);

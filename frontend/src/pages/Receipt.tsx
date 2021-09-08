@@ -42,9 +42,6 @@ const Receipt: React.FC<Props> = ({ match }) => {
             <Title title="Receipt" />
             <div className="l-Main">
                 <Header />
-                <CheckoutSuccess 
-                    receiptURL="https://dashboard.stripe.com/emails/receipts/pmtrc_1JWIXkK7vevnRCV2LzmgoxVV"
-                />
             </div>
         </>
     )

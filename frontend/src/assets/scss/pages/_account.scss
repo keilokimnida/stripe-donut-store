@@ -3,6 +3,8 @@
     margin: auto;
 
     &__Profile {
+        margin-top: 50px;
+
         h1 {
             color: $stripe-text-dark;
             font-weight: bold;
@@ -42,6 +44,58 @@
                     }
                 }
             }
+        }
+    }
+
+    &__Payment-history,
+    &__Payment-method {
+        margin-top: 50px;
+
+        h1 {
+            color: $stripe-text-dark;
+            font-weight: bold;
+            font-size: $font-large;
+        }
+
+        hr {
+            opacity: 0.7;
+        }
+
+        .c-SVG__Visa {
+            svg {
+                width: 30.799px;
+                height: 10px;
+            }
+        }
+
+        .c-SVG__Master {
+            svg {
+                width: 30.799px;
+                height: 21.8px;
+            }
+        }
+
+        .c-SVG__Amex {
+            svg {
+                width: 35px;
+                height: 35px;
+            }
+
+        }
+
+    }
+
+    &__Subscription {
+        margin-top: 50px;
+
+        h1 {
+            color: $stripe-text-dark;
+            font-weight: bold;
+            font-size: $font-large;
+        }
+
+        hr {
+            opacity: 0.7;
         }
     }
 

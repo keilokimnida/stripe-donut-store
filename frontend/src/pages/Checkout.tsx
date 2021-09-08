@@ -11,6 +11,7 @@ import LoggedOut from '../common/LoggedOut';
 import CartItem from '../common/CartItem';
 import Skeleton from '@material-ui/lab/Skeleton';
 import Spinner from 'react-bootstrap/Spinner'
+import Error from "../common/Error";
 import {
     CardElement,
     useStripe,
@@ -18,6 +19,8 @@ import {
 } from "@stripe/react-stripe-js";
 import { PaymentIntentConfirmParams } from "@stripe/stripe-js";
 import { PageStatusEnum } from '../config/enums';
+import ContentLoader from "react-content-loader"
+import CheckoutSuccess from '../common/CheckoutSuccess';
 
 
 const Checkout: React.FC = () => {
@@ -27,11 +30,6 @@ const Checkout: React.FC = () => {
     interface OrderSummaryInterface {
         grandTotal: number | null;
         subTotal: number | null;
-    }
-    enum PageStatusEnum {
-        ACTIVE = "Active",
-        LOADING = "Loading",
-        ERROR = "Error"
     }
 
 
@@ -48,11 +46,13 @@ const Checkout: React.FC = () => {
     const [rerender, setRerender] = useState<boolean>(false);
     const [pageStatus, setPageStatus] = useState<PageStatusEnum>(PageStatusEnum.LOADING);
     const [saveCard, setSaveCard] = useState<boolean>(false);
+    const [paymentMethods, setPaymentMethods] = useState<[]>([]);
 
     // Stripe
     const [paymentError, setPaymentError] = useState<string | null>(null);
     const [paymentProcessing, setPaymentProcessing] = useState(false);
     const [paymentDisabled, setPaymentDisabled] = useState(true);
+    const [paymentSuccess, setPaymentSuccess] = useState<boolean>(false);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const stripe = useStripe();
     const elements = useElements();
@@ -98,22 +98,14 @@ const Checkout: React.FC = () => {
                         });
 
                         // Check if user has any payment types stored already
-                        const paymentMethods = await axios.get(`${config.baseUrl}/stripe/payment_methods/${cartData.account.stripe_customer_id}`, {
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            }
-                        });
-
-                        const paymentMethodsData = paymentMethods.data;
-
-                        console.log(paymentMethodsData);
 
                         // If there's payment methods set up already
-                        if (paymentMethodsData.data.length > 0) {
-                            console.log("there are already existing payment methods!")
+                        if (cartData.account.payment_accounts.length > 0) {
+                            console.log("there are already existing payment methods!");
+                            console.log(cartData.account.payment_accounts);
                         } else {
                             // This else block can be removed
-                            console.log("there are no existing payment methods!")
+                            console.log("there are no existing payment methods!");
                         }
 
                         // If there are no payment intent
@@ -153,7 +145,7 @@ const Checkout: React.FC = () => {
                 console.log(error);
                 if (componentMounted) {
                     setTimeout(() => {
-                        setPageStatus(() => PageStatusEnum.ACTIVE) // set page status to active
+                        setPageStatus(() => PageStatusEnum.ERROR) // set page status to error
                     }, 300);
                 }
             }
@@ -201,10 +193,7 @@ const Checkout: React.FC = () => {
     const handleFormSubmit = async (event: any) => {
         event.preventDefault();
         console.log("test");
-        setPaymentProcessing(true);
-        setTimeout(() => {
-            setPaymentProcessing(false); // this settimeout is to be removed
-        }, 3000);
+        setPaymentProcessing(() => true);
 
         let setup_future_usage: PaymentIntentConfirmParams.SetupFutureUsage | null | undefined = null;
 
@@ -212,7 +201,7 @@ const Checkout: React.FC = () => {
             setup_future_usage = "off_session";
         }
 
-        const payload = await stripe!.confirmCardPayment(clientSecret!, {
+        const payload: any = await stripe!.confirmCardPayment(clientSecret!, {
             payment_method: {
                 card: elements!.getElement(CardElement)!
             },
@@ -220,11 +209,12 @@ const Checkout: React.FC = () => {
         });
 
         if (payload.error) {
-            setPaymentError(`Payment failed ${payload.error.message}`);
-            setPaymentProcessing(false);
+            setPaymentError(() => `Payment failed ${payload.error.message}`);
+            setPaymentProcessing(() => false);
         } else {
-            setPaymentError(null);
+            setPaymentError(() => null);
             setPaymentProcessing(false);
+            setPaymentSuccess(() => true);
         }
     };
 
@@ -254,97 +244,121 @@ const Checkout: React.FC = () => {
                 <Header rerender={rerender} />
                 <div className="c-Checkout">
                     {
-                        cartArr.length === 0 ?
-                            // Cart is empty
-                            <div className="c-Checkout__Empty">
-                                <h1>Your cart is empty!</h1>
-                                <NavLink to="/products">Start adding products!</NavLink>
-                            </div>
+                        pageStatus === PageStatusEnum.ERROR ?
+                            <Error />
                             :
-                            // Checkout
-                            <>
-                                {/* Checkout Form */}
-                                <form className="c-Checkout__Left" onSubmit={handleFormSubmit}>
-                                    <h1>Checkout Details</h1>
-
-                                    <div className="c-Left__Billing-info">
-                                        <h2>Shipping & Billing Information</h2>
-                                        <p>Not available.</p>
-                                    </div>
-                                    <div className="c-Left__Card-info">
-                                        <h2>Payment Information</h2>
-                                        <div className="l-Card-info__Card-element">
-                                            <div className="c-Card-info__Card-element">
-                                                {/* Card input is rendered here */}
-                                                <CardElement options={cardStyle} onChange={handleCardInputChange} />
-                                            </div>
-                                        </div>
-                                        {/* Show any error that happens when processing the payment */}
-                                        {paymentError && (
-                                            <div className="card-error" role="alert">
-                                                {paymentError}
-                                            </div>
-                                        )}
-                                        <div className="c-Card-info__Save-card">
-                                            <input name="saveCard" type="checkbox" onChange={handleCheckboxChange} checked={saveCard} value="saveCard" />
-                                            <label htmlFor="saveCard">Save for Future Payments</label>
-                                        </div>
-
-                                    </div>
-                                    <button
-                                        disabled={paymentProcessing || paymentDisabled}
-                                        className="c-Btn"
-                                        type="submit"
-                                    >
-                                        {paymentProcessing ? (
-                                            <>
-                                                <span> Processing Payment...</span>
-                                                <Spinner animation="border" role="status" />
-                                            </>
-                                        ) : (
-                                            <>
-                                                Pay S${orderSummary.grandTotal ? orderSummary.grandTotal.toFixed(2) : "Error"}
-                                            </>
-                                        )}
-                                    </button>
-                                    <button
-                                        disabled={paymentProcessing}
-                                        className="c-Btn"
-                                        onClick={() => history.push("/cart")}
-                                        type="button"
-                                    >Back to Cart
-                                    </button>
-                                </form>
-                                {/* Summary */}
-                                <div className="c-Checkout__Right">
-                                    <h1>Summary</h1>
-                                    <div className="l-Checkout__Checkout-card">
-                                        <div className="c-Checkout-card">
-                                            <div className="c-Checkout-card__Info">
-                                                {
-                                                    cartArr.map((data: LooseObject, index: number) => (
-                                                        <div key={index}>
-                                                            <div className="c-Checkout-card__Item-sub-total">
-                                                                <p>{data.quantity} x {data.name}</p>
-                                                                <h2>S${data.totalPrice.toFixed(2)}</h2>
-                                                            </div>
-                                                            <hr />
-                                                        </div>
-                                                    ))
-                                                }
-                                                <div className="c-Checkout-card__Sub-total">
-                                                    <h1>Sub Total</h1>
-                                                    <h2>S${orderSummary.subTotal ? orderSummary.subTotal!.toFixed(2) : "Error!"}</h2>
-                                                </div>
-                                                <div className="c-Checkout-card__Grand-total">
-                                                    <h1>Grand Total</h1>
-                                                    <h2>S${orderSummary.grandTotal ? orderSummary.grandTotal!.toFixed(2) : "Error!"}</h2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                            pageStatus === PageStatusEnum.LOADING ?
+                                <div className="c-Checkout__Skeleton">
+                                    <ContentLoader viewBox="0 0 340 84">
+                                        <rect x="0" y="0" width="67" height="10px" rx="3" />
+                                        <rect x="76" y="0" width="140" height="10" rx="3" />
+                                        <rect x="127" y="48" width="53" height="10" rx="3" />
+                                        <rect x="187" y="48" width="72" height="10" rx="3" />
+                                        <rect x="18" y="48" width="100" height="10" rx="3" />
+                                        <rect x="0" y="71" width="37" height="10" rx="3" />
+                                        <rect x="18" y="23" width="140" height="10" rx="3" />
+                                        <rect x="166" y="23" width="173" height="10" rx="3" />
+                                    </ContentLoader>
                                 </div>
-                            </>
+
+                                // to do skeleton loading here
+                                :
+                                cartArr.length === 0 ?
+                                    // Cart is empty
+                                    <div className="c-Checkout__Empty">
+                                        <h1>Your cart is empty!</h1>
+                                        <NavLink to="/products">Start adding products!</NavLink>
+                                    </div>
+                                    :
+                                    paymentSuccess ?
+                                    <CheckoutSuccess />
+                                    :
+                                    // Checkout
+                                    <>
+                                        {/* Checkout Form */}
+                                        <form className="c-Checkout__Left" onSubmit={handleFormSubmit}>
+                                            <h1>Checkout Details</h1>
+
+                                            <div className="c-Left__Billing-info">
+                                                <h2>Shipping & Billing Information</h2>
+                                                <p>Not available.</p>
+                                            </div>
+                                            <div className="c-Left__Card-info">
+                                                <h2>Payment Information</h2>
+                                                <div className="l-Card-info__Card-element">
+                                                    <div className="c-Card-info__Card-element">
+                                                        {/* Card input is rendered here */}
+                                                        <CardElement options={cardStyle} onChange={handleCardInputChange} />
+                                                    </div>
+                                                </div>
+                                                {/* Show any error that happens when processing the payment */}
+                                                {paymentError && (
+                                                    <div className="card-error" role="alert">
+                                                        {paymentError}
+                                                    </div>
+                                                )}
+                                                <div className="c-Card-info__Save-card">
+                                                    <input name="saveCard" type="checkbox" onChange={handleCheckboxChange} checked={saveCard} value="saveCard" />
+                                                    <label htmlFor="saveCard">Save Card for Future Payments</label>
+                                                </div>
+
+                                            </div>
+                                            <button
+                                                disabled={paymentProcessing || paymentDisabled}
+                                                className="c-Btn"
+                                                type="submit"
+                                            >
+                                                {paymentProcessing ? (
+                                                    <>
+                                                        <span> Processing Payment...</span>
+                                                        <Spinner animation="border" role="status" />
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        Pay S${orderSummary.grandTotal ? orderSummary.grandTotal.toFixed(2) : "Error"}
+                                                    </>
+                                                )}
+                                            </button>
+                                            <button
+                                                disabled={paymentProcessing}
+                                                className="c-Btn"
+                                                onClick={() => history.push("/cart")}
+                                                type="button"
+                                            >Back to Cart
+                                            </button>
+                                        </form>
+                                        {/* Summary */}
+                                        <div className="c-Checkout__Right">
+                                            <h1>Summary</h1>
+                                            <div className="l-Checkout__Checkout-card">
+                                                <div className="c-Checkout-card">
+                                                    <div className="c-Checkout-card__Info">
+                                                        {
+                                                            cartArr.map((data: LooseObject, index: number) => (
+                                                                <div key={index}>
+                                                                    <div className="c-Checkout-card__Item-sub-total">
+                                                                        <p>{data.quantity} x {data.name}</p>
+                                                                        <h2>S${data.totalPrice.toFixed(2)}</h2>
+                                                                    </div>
+                                                                    <hr />
+                                                                </div>
+                                                            ))
+                                                        }
+                                                        <div className="c-Checkout-card__Sub-total">
+                                                            <h1>Sub Total</h1>
+                                                            <h2>S${orderSummary.subTotal ? orderSummary.subTotal!.toFixed(2) : "Error!"}</h2>
+                                                        </div>
+                                                        <div className="c-Checkout-card__Grand-total">
+                                                            <h1>Grand Total</h1>
+                                                            <h2>S${orderSummary.grandTotal ? orderSummary.grandTotal!.toFixed(2) : "Error!"}</h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+
+
                     }
                 </div>
             </div>

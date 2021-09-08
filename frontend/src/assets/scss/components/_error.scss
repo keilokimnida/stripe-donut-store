@@ -1,0 +1,24 @@
+.c-Error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: calc(100vh - 110px);
+    width: 100%;
+
+    h1 {
+        font-size: $font-large;
+        font-weight: bold;
+        color: $stripe-text-dark;
+    }
+
+    a {
+        color: $stripe-purple;
+        font-size: $font-small;
+        font-weight: 600;
+
+        &:hover {
+            opacity: 0.7;
+        }
+    }
+}
