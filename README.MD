@@ -6,6 +6,8 @@ Pet project for the Sep/Oct 2021 holidays! Simple store that sells premium donut
 1. Integrate React & NodeJS application with Stripe
     1. Learn how to use Stripe Payment Intent api
     2. Learn how to use Stripe Subscription and Invoicing apis
+    3. Learn how to use Stripe Element to receive Card Payment
+    4. Learn how to add Google pay & Apple Pay payment methods
 2. Typescript with React
 3. Sequelize
 4. Skeleton Loading
