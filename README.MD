@@ -1,7 +1,5 @@
 # Stripe Donut
 
----
-
 Pet project for the Sep/Oct 2021 holidays! Simple store that sells premium donuts, and offers exclusive products to users who have subscribed for a membership.
 
 Learning Objectives:
@@ -16,8 +14,6 @@ Learning Objectives:
 
 # Project Set Up
 
----
-
 ## Stripe
 
 Set up a an account on [Stripe](https://stripe.com/en-sg).
@@ -25,8 +21,6 @@ Set up a an account on [Stripe](https://stripe.com/en-sg).
 ---
 
 ## Frontend
-
----
 
 Create a new `.env` file and paste this inside:
 
@@ -39,8 +33,6 @@ Create a new `.env` file and paste this inside:
 ---
 
 ## Backend
-
----
 
 Run the SQL init file
 Create a new `.env` file and paste this inside:
