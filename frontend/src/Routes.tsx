@@ -8,6 +8,7 @@ import Account from './pages/Account';
 import Membership from './pages/Membership';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import Receipt from './pages/Receipt';
 import MembershipPayment from './pages/MembershipPayment';
 
 // Other imports
@@ -38,6 +39,7 @@ const Routes: React.FC = () => {
                 <Route path = "/membership/payment/:type" render={(props: any) => <MembershipPayment {...props} />}/>
                 <Route exact path = "/cart" render={() => <Cart />}/>
                 <Route path = "/cart/checkout" render={() => <Checkout />}/>
+                <Route path = "/receipt/:receiptID" render={(props: any) => <Receipt {...props} />}/>
                 <Route path = "/account" render={(props: any) => <Account {...props} />}/>
             </Switch>
         </Router>
