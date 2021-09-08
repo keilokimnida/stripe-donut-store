@@ -18,7 +18,7 @@ Pet project for Sep/Oct 2021 holiday! Simple store that sells premium donuts, an
 - Set up an account on [Stripe](https://stripe.com/en-sg)
 - Your Stripe account will contain your **test** secret and public API keys which will be pasted in backend `.env` file later
 - Monitor and test stripe transactions using the dashboard
-- More info can be found in their docs [Overview](https://stripe.com/docs) [API docs](https://stripe.com/docs/api)
+- More info can be found in [Overview docs](https://stripe.com/docs) & [API docs](https://stripe.com/docs/api)
 
 ## Frontend
 
