@@ -5,7 +5,7 @@ import Title from '../common/Title';
 import { toast, ToastContainer } from 'react-toastify';
 import { getToken } from '../utilities/localStorageUtils';
 import { RouteComponentProps, useHistory, NavLink } from 'react-router-dom';
-
+import CheckoutSuccess from '../common/CheckoutSuccess'; // for testing oni
 
 interface MatchParams {
     name: string;
@@ -42,7 +42,9 @@ const Receipt: React.FC<Props> = ({ match }) => {
             <Title title="Receipt" />
             <div className="l-Main">
                 <Header />
-                
+                <CheckoutSuccess 
+                    receiptURL="https://dashboard.stripe.com/emails/receipts/pmtrc_1JWIXkK7vevnRCV2LzmgoxVV"
+                />
             </div>
         </>
     )

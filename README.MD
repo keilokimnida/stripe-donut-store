@@ -2,10 +2,10 @@
 
 Pet project for the Sep/Oct 2021 holidays! Simple store that sells premium donuts, and offers exclusive products to users who have subscribed for a membership.
 
-Learning Objectives:
+**Learning Objectives:**
 1. Integrate React & NodeJS application with Stripe
-    1. Learn how to use Stripe payment intent api
-    2. Learn how to use Stripe subscription and invoicing apis
+    1. Learn how to use Stripe Payment Intent api
+    2. Learn how to use Stripe Subscription and Invoicing apis
 2. Typescript with React
 3. Sequelize
 4. Skeleton Loading

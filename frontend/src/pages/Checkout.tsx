@@ -14,8 +14,9 @@ import Spinner from 'react-bootstrap/Spinner'
 import {
     CardElement,
     useStripe,
-    useElements
+    useElements,
 } from "@stripe/react-stripe-js";
+import { PaymentIntentConfirmParams } from "@stripe/stripe-js";
 import { PageStatusEnum } from '../config/enums';
 
 
@@ -202,21 +203,29 @@ const Checkout: React.FC = () => {
         console.log("test");
         setPaymentProcessing(true);
         setTimeout(() => {
-            setPaymentProcessing(false);
+            setPaymentProcessing(false); // this settimeout is to be removed
         }, 3000);
-        // const payload = await stripe!.confirmCardPayment(clientSecret, {
-        //     payment_method: {
-        //         card: elements!.getElement(CardElement)!
-        //     }
-        // });
 
-        // if (payload.error) {
-        //     setPaymentError(`Payment failed ${payload.error.message}`);
-        //     setPaymentProcessing(false);
-        // } else {
-        //     setPaymentError(null);
-        //     setPaymentProcessing(false);
-        // }
+        let setup_future_usage: PaymentIntentConfirmParams.SetupFutureUsage | null | undefined = null;
+
+        if (saveCard) {
+            setup_future_usage = "off_session";
+        }
+
+        const payload = await stripe!.confirmCardPayment(clientSecret!, {
+            payment_method: {
+                card: elements!.getElement(CardElement)!
+            },
+            setup_future_usage
+        });
+
+        if (payload.error) {
+            setPaymentError(`Payment failed ${payload.error.message}`);
+            setPaymentProcessing(false);
+        } else {
+            setPaymentError(null);
+            setPaymentProcessing(false);
+        }
     };
 
     const handleInputChange = () => {
