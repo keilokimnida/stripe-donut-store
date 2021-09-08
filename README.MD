@@ -26,12 +26,13 @@ Create a new `.env` file and paste this inside:
 
     REACT_APP_BASEURL=http://localhost:8000/api/v1
     REACT_APP_BASEURL_STRIPE_PK_TEST=
+    
 ```
 
 ## Backend
 
-Run the SQL init file
-Create a new `.env` file and paste this inside:
+- Run the SQL init file
+- Create a new `.env` file and paste this inside:
 
 ```
 
