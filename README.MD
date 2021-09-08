@@ -10,15 +10,11 @@ Learning Objectives:
 3. Sequelize
 4. Skeleton Loading
 
----
-
 # Project Set Up
 
 ## Stripe
 
 Set up a an account on [Stripe](https://stripe.com/en-sg).
-
----
 
 ## Frontend
 
@@ -29,8 +25,6 @@ Create a new `.env` file and paste this inside:
     REACT_APP_BASEURL=http://localhost:8000/api/v1
     REACT_APP_BASEURL_STRIPE_PK_TEST=
 ```
-
----
 
 ## Backend
 
