@@ -1,6 +1,6 @@
-const { Accounts } = require("../models/Accounts");
-const { PaymentMethods } = require("../models/PaymentMethods");
-const { Receipts } = require("../models/Receipts");
+const { Accounts } = require("../model_definitions/Accounts");
+const { PaymentMethods } = require("../model_definitions/PaymentMethods");
+const { Receipts } = require("../model_definitions/Receipts");
 
 module.exports.findAccountByID = (accountID) => Accounts.findByPk(accountID, {
     include: [{

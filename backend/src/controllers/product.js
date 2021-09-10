@@ -1,4 +1,4 @@
-const { findAllProducts, findProductByProductID } = require('../services/product');
+const { findAllProducts, findProductByProductID } = require('../models/product');
 
 // READ
 

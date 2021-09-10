@@ -1,5 +1,5 @@
-const { findCartItemsByAccountID, insertCartItem, findCartItemByAccountIDAndProductID, updateCartItem, deleteCartItem, deleteAllCartItemByAccountID } = require('../services/cart');
-const { findAccountByID, updateAccountByID } = require("../services/account");
+const { findCartItemsByAccountID, insertCartItem, findCartItemByAccountIDAndProductID, updateCartItem, deleteCartItem, deleteAllCartItemByAccountID } = require('../models/cart');
+const { findAccountByID, updateAccountByID } = require("../models/account");
 const { cancelPaymentIntent } = require("../services/stripe");
 
 // Get cart by account id

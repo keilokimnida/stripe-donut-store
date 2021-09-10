@@ -1,9 +1,9 @@
-const { Accounts } = require("./src/models/Accounts");
-const { Passwords } = require("./src/models/Passwords");
-const { Products } = require("./src/models/Products");
-const { CartItem } = require("./src/models/CartItem");
-const { Membership } = require("./src/models/Membership");
-const { Receipts } = require("./src/models/Receipts");
+const { Accounts } = require("./src/model_definitions/Accounts");
+const { Passwords } = require("./src/model_definitions/Passwords");
+const { Products } = require("./src/model_definitions/Products");
+const { CartItem } = require("./src/model_definitions/CartItem");
+const { Membership } = require("./src/model_definitions/Membership");
+const { Orders } = require("./src/model_definitions/Orders");
 
 const express = require("express");
 const cors = require("cors");

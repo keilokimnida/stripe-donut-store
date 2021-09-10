@@ -1,4 +1,4 @@
-const { findCartItemsByAccountID } = require("../services/cart");
+const { findCartItemsByAccountID } = require("../models/cart");
 
 module.exports.calculateProductsTotalPrice = async (req, res, next) => {
     try {

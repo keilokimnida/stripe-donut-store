@@ -1,38 +1,32 @@
-const { DataTypes } = require("sequelize");
-const db = require("../config/connection");
+const { PaymentMethods } = require("../models/PaymentMethods");
+const { Accounts_PaymentMethods } = require("../models/Accounts_PaymentMethods");
 
-const PaymentMethods = db.define(
-    "PaymentMethods",
-    {
-        payment_methods_id: {
-            type: DataTypes.INTEGER.UNSIGNED,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        stripe_payment_method_fingerprint: {
-            type: DataTypes.STRING(255),
-            allowNull: false,
-            unique: true
-        },
-        stripe_card_last_four_digit: {
-            type: DataTypes.STRING(255),
-            allowNull: false,
-            unique: true
-        },
-        stripe_card_type: {
-            type: DataTypes.STRING(255),
-            allowNull: false,
-            unique: true
-        }
-    },
-    {
-        tableName: "payment_methods",
-        timestamps: true,
-        createdAt: "created_at",
-        updatedAt: "updated_at",
-        paranoid: true,
-        deletedAt: "deleted_at"
+module.exports.insertPaymentMethod = (accountID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType) => {
+
+    const paymentMethods = await PaymentMethods.create({
+        stripe_paymemt_method_fingerprint: stripeCardFingerprint,
+        stripe_last_four_digit:  stripeCardLastFourDigit,
+        stripe_card_type: stripeCardType
+    });
+
+    try {
+        await Accounts_PaymentMethods.create({
+           fk_account_id: accountID,
+           fk_payment_methods_id: paymentMethods.payment_methods_id
+        });
+    } catch (e) {
+        console.log(e);
+        PaymentMethods.destroy({
+            where: {
+                fk_account_id: accountID
+            }
+        });
+        throw error;
     }
-);
+};
 
-module.exports = { PaymentMethods };
+module.exports.findPaymentMethodsByAccountID = (accountID) => Accounts_PaymentMethods.findAll({
+    where: {
+        fk_account_id: accountID
+    }
+});

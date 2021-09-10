@@ -1,4 +1,4 @@
-const { Products } = require("../models/Products");
+const { Products } = require("../model_definitions/Products");
 
 module.exports.findAllProducts = () => Products.findAll();
 

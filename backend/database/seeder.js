@@ -1,9 +1,10 @@
 // MODELS IMPORT
-const { Accounts } = require("../src/models/Accounts");
-const { Passwords } = require("../src/models/Passwords");
-const { Products } = require("../src/models/Products");
-const { CartItem } = require("../src/models/CartItem");
-const { Membership } = require("../src/models/Membership");
+const { Accounts } = require("../src/model_definitions/Accounts");
+const { Passwords } = require("../src/model_definitions/Passwords");
+const { Products } = require("../src/model_definitions/Products");
+const { CartItem } = require("../src/model_definitions/CartItem");
+const { Membership } = require("../src/model_definitions/Membership");
+const { Order } = require("../src/model_definitions/Orders");
 
 // SERVICES IMPORT
 const { createStripeCustomer } = require("../src/services/stripe");

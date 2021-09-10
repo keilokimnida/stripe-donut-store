@@ -1,4 +1,4 @@
-const { findAllMemberships } = require('../services/membership');
+const { findAllMemberships } = require('../models/membership');
 
 // Get all memberships
 module.exports.findAllMemberships = async (req, res) => {

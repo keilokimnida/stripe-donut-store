@@ -2,8 +2,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const { jwt: { secret: jwtSecret } } = require("../config/config");
-const { Accounts } = require("../models/Accounts");
-const { Passwords } = require("../models/Passwords");
+const { Accounts } = require("../model_definitions/Accounts");
+const { Passwords } = require("../model_definitions/Passwords");
 
 module.exports.clientLogin = async (req, res) => {
     try {

@@ -1,5 +1,5 @@
-const { findAccountByID } = require('../services/account');
-const { findReceiptByAccountID } = require('../services/receipts');
+const { findAccountByID } = require('../models/account');
+const { findReceiptByAccountID } = require('../models/receipts');
 
 // Get account by ID
 

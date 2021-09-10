@@ -1,5 +1,5 @@
 const { createPaymentIntent, createStripeCustomer, findStripeCustomerPaymentMethods, updatePaymentIntent } = require('../services/stripe');
-const { findAccountByID, updateAccountByID } = require('../services/account');
+const { findAccountByID, updateAccountByID } = require('../models/account');
 
 // Create payment intent
 module.exports.createPaymentIntent = async (req, res) => {
@@ -23,7 +23,7 @@ module.exports.createPaymentIntent = async (req, res) => {
         let clientSecret;
 
         if (account.stripe_payment_intent_id === null) {
-            const paymentIntent = await createPaymentIntent(totalPrice);
+            const paymentIntent = await createPaymentIntent(totalPrice, account.stripe_customer_id);
             clientSecret = paymentIntent.client_secret;
             const paymentIntentID = paymentIntent.id;
             const updateAccountContent = {

@@ -32,7 +32,7 @@ module.exports = router => {
     router.get("/api/v1/account/:accountID", isLoggedIn, accountController.findAccountByID);
     
     // RECEIPT
-    router.post("/api/v1/receipts", isLoggedIn, calculateProductsTotalPrice, receiptsController.insertReceipt);
+    router.post("/api/v1/orders", isLoggedIn, calculateProductsTotalPrice, receiptsController.insertOrder);
 
     // PRODUCTS
     router.get("/api/v1/products", productController.findAllProducts);

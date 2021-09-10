@@ -1,14 +1,13 @@
 const config = require("../config/config");
-const { PaymentMethods } = require("../models/PaymentMethods");
-const { Accounts_PaymentMethods } = require("../models/Accounts_PaymentMethods");
 
 // Test secret API Key
 const stripe = require("stripe")(config.stripe.test.sk);
 
 // Create payment intent
-module.exports.createPaymentIntent = (totalPrice) => stripe.paymentIntents.create({
+module.exports.createPaymentIntent = (totalPrice, stripeCustomerID) => stripe.paymentIntents.create({
     amount: totalPrice,
     currency: "sgd",
+    customer: stripeCustomerID || null,
     receipt_email: "tkl48leon@gmail.com"
 });
 
