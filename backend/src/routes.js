@@ -11,12 +11,18 @@ const receiptsController = require("./controllers/receipts");
 const { isLoggedIn } = require("./middlewares/login");
 const { calculateProductsTotalPrice } = require("./middlewares/payment");
 
+// WEBHOOK SECRET
+const endpointSecret = 'whsec_...';
+
 module.exports = router => {
 
     // Default URL check
     router.get("/", (req, res) => {
         res.status(200).send("안녕하세요~! Donut store api is functioning properly");
     })
+
+    // WEBHOOKS
+    router.post("/api/v1/webhooks/stripe/");
 
     // LOGIN
     router.post("/api/v1/login", authController.clientLogin);

@@ -38,10 +38,10 @@ REACT_APP_BASEURL_STRIPE_PK_TEST=
 
 ```
 
-PORT=8000
+PORT=
 DB_HOST=localhost
 DB_NAME=stripe_donut_store
-DB_PORT=3306
+DB_PORT=
 DB_USER=root
 DB_PASSWORD=
 
