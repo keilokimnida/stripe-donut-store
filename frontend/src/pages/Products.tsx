@@ -10,6 +10,8 @@ import ProductCard from '../common/ProductCard';
 import axios from 'axios';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { NavLink } from 'react-router-dom';
+import { PageStatusEnum } from '../config/enums';
+import Error from "../common/Error";
 
 const Products: React.FC = () => {
     const toastTiming = config.toastTiming;
@@ -17,6 +19,7 @@ const Products: React.FC = () => {
     // State declarations
     const [productArr, setProductArr] = useState<[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [pageStatus, setPageStatus] = useState<PageStatusEnum>(PageStatusEnum.LOADING);
 
     useEffect(() => {
 
@@ -35,13 +38,13 @@ const Products: React.FC = () => {
                         }));
                     });
                     setTimeout(() => {
-                        setLoading(() => false);
+                        setPageStatus(() => PageStatusEnum.ACTIVE); // set page status to active
                     }, 300);
                 }
             })
             .catch((err) => {
                 console.log(err);
-                setLoading(() => false);
+                setPageStatus(() => PageStatusEnum.ERROR); // set page status to error
             });
 
         // Clean up to prevent memory leak
@@ -70,10 +73,13 @@ const Products: React.FC = () => {
                 <Header />
                 <Row className="c-Products">
                     {
-                        loading ?
-                            <>
-                                {
-                                    [{}, {}, {}].map((data, index) => (
+                        pageStatus === PageStatusEnum.ERROR ?
+                            <Error />
+                            :
+                            pageStatus === PageStatusEnum.LOADING ?
+                                <>
+                                    {
+                                        [{}, {}, {}].map((data, index) => (
                                             <Col xs={12} md={6} lg={4} xl={3} className="c-Products-card" key={index}>
                                                 <NavLink to="#">
                                                     <Skeleton variant="rect" className="c-Products-card__Img" />
@@ -83,23 +89,23 @@ const Products: React.FC = () => {
                                                     </div>
                                                 </NavLink>
                                             </Col>
-                                    ))
+                                        ))
 
-                                }
-                            </>
-                            :
-                            productArr.length !== 0 ?
-                                productArr.map((data: { [key: string]: any }, index: number): JSX.Element => {
-                                    return <ProductCard
-                                        key={index}
-                                        productID={data.productID}
-                                        productTitle={data.productTitle}
-                                        price={data.price}
-                                        productImg={donutImg}
-                                    />
-                                })
+                                    }
+                                </>
                                 :
-                                "Cannot find products"
+                                productArr.length !== 0 ?
+                                    productArr.map((data: { [key: string]: any }, index: number): JSX.Element => {
+                                        return <ProductCard
+                                            key={index}
+                                            productID={data.productID}
+                                            productTitle={data.productTitle}
+                                            price={data.price}
+                                            productImg={donutImg}
+                                        />
+                                    })
+                                    :
+                                    "Cannot find products"
                     }
                 </Row>
             </Container>

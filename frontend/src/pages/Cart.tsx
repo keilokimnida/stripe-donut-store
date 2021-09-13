@@ -10,7 +10,8 @@ import { NavLink, useHistory } from 'react-router-dom';
 import LoggedOut from '../common/LoggedOut';
 import CartItem from '../common/CartItem';
 import Skeleton from '@material-ui/lab/Skeleton';
-
+import { PageStatusEnum } from '../config/enums';
+import Error from "../common/Error";
 
 const Cart: React.FC = () => {
 
@@ -39,7 +40,7 @@ const Cart: React.FC = () => {
     });
     const [rerender, setRerender] = useState<boolean>(false);
 
-    const [loading, setLoading] = useState<boolean>(true);
+    const [pageStatus, setPageStatus] = useState<PageStatusEnum>(PageStatusEnum.LOADING);
 
     useEffect(() => {
         let componentMounted = true;
@@ -84,7 +85,7 @@ const Cart: React.FC = () => {
                         setCartArr(() => []);
                     }
                     setTimeout(() => {
-                        setLoading(() => false);
+                        setPageStatus(() => PageStatusEnum.ACTIVE); // set page status to active
                     }, 300);
                 }
             })
@@ -92,7 +93,7 @@ const Cart: React.FC = () => {
                 console.log(err);
                 if (componentMounted) {
                     setTimeout(() => {
-                        setLoading(() => false);
+                        setPageStatus(() => PageStatusEnum.ERROR); // set page status to error
                     }, 300);
                 }
             });
@@ -122,13 +123,10 @@ const Cart: React.FC = () => {
                 <div className="c-Cart">
                     {
                         token ?
-                            cartArr.length === 0 ?
-                                <div className="c-Cart__Empty">
-                                    <h1>Your cart is empty!</h1>
-                                    <NavLink to="/products">Start adding products!</NavLink>
-                                </div>
+                            pageStatus === PageStatusEnum.ERROR ?
+                                <Error />
                                 :
-                                loading ?
+                                pageStatus === PageStatusEnum.LOADING ?
                                     <>
                                         <div className="c-Cart__Left">
                                             <h1>Your Items</h1>
@@ -160,80 +158,86 @@ const Cart: React.FC = () => {
                                                         <hr />
 
                                                         <div className="c-Checkout-card__Sub-total">
-                                                            <h1><Skeleton variant="text" width={100}/></h1>
+                                                            <h1><Skeleton variant="text" width={100} /></h1>
                                                             <h2><Skeleton variant="text" width={40} /></h2>
                                                         </div>
                                                         <div className="c-Checkout-card__Grand-total">
-                                                            <h1><Skeleton variant="text" width={100}/></h1>
+                                                            <h1><Skeleton variant="text" width={100} /></h1>
                                                             <h2><Skeleton variant="text" width={40} /></h2>
                                                         </div>
                                                     </div>
-                                                    <Skeleton variant="rect" height = {42} width={"100%"} />
+                                                    <Skeleton variant="rect" height={42} width={"100%"} />
                                                 </div>
                                             </div>
                                         </div>
                                     </>
                                     :
-                                    <>
-                                        <div className="c-Cart__Left">
-                                            <h1>Your Items</h1>
-                                            <div className="l-Cart__Items">
-                                                {
-                                                    cartArr.map((data: LooseObject, index: number) => (
-                                                        <div key={index}>
-                                                            <CartItem
-                                                                name={data.name}
-                                                                unitPrice={data.unitPrice}
-                                                                totalPrice={data.totalPrice}
-                                                                quantity={data.quantity}
-                                                                productID={data.productID}
-                                                                key={index}
-                                                                setRerender={setRerender}
-                                                            />
-                                                            <hr />
-                                                        </div>
-                                                    ))
-                                                }
-                                            </div>
+                                    cartArr.length === 0 ?
+                                        <div className="c-Cart__Empty">
+                                            <h1>Your cart is empty!</h1>
+                                            <NavLink to="/products">Start adding products!</NavLink>
                                         </div>
-                                        <div className="c-Cart__Right">
-                                            <h1>Summary</h1>
-                                            <div className="l-Cart__Checkout-card">
-                                                <div className="c-Checkout-card">
-                                                    <div className="c-Checkout-card__Info">
-                                                        {
-                                                            cartArr.map((data: LooseObject, index: number) => (
-                                                                <div key={index}>
-                                                                    <div className="c-Checkout-card__Item-sub-total">
-                                                                        <p>{data.quantity} x {data.name}</p>
-                                                                        <h2>S${data.totalPrice.toFixed(2)}</h2>
-                                                                    </div>
-                                                                    <hr />
-                                                                </div>
-                                                            ))
-                                                        }
-                                                        <div className="c-Checkout-card__Sub-total">
-                                                            <h1>Sub Total</h1>
-                                                            <h2>S${orderSummary.subTotal ? orderSummary.subTotal!.toFixed(2) : "Error!"}</h2>
-                                                        </div>
-                                                        <div className="c-Checkout-card__Grand-total">
-                                                            <h1>Grand Total</h1>
-                                                            <h2>S${orderSummary.grandTotal ? orderSummary.grandTotal!.toFixed(2) : "Error!"}</h2>
-                                                        </div>
-                                                    </div>
-                                                    <button type="button" className="c-Btn" onClick={() => history.push("/cart/checkout")}>Checkout</button>
+                                        :
+                                        <>
+                                            <div className="c-Cart__Left">
+                                                <h1>Your Items</h1>
+                                                <div className="l-Cart__Items">
+                                                    {
+                                                        cartArr.map((data: LooseObject, index: number) => (
+                                                            <div key={index}>
+                                                                <CartItem
+                                                                    name={data.name}
+                                                                    unitPrice={data.unitPrice}
+                                                                    totalPrice={data.totalPrice}
+                                                                    quantity={data.quantity}
+                                                                    productID={data.productID}
+                                                                    key={index}
+                                                                    setRerender={setRerender}
+                                                                />
+                                                                <hr />
+                                                            </div>
+                                                        ))
+                                                    }
                                                 </div>
                                             </div>
-                                        </div>
+                                            <div className="c-Cart__Right">
+                                                <h1>Summary</h1>
+                                                <div className="l-Cart__Checkout-card">
+                                                    <div className="c-Checkout-card">
+                                                        <div className="c-Checkout-card__Info">
+                                                            {
+                                                                cartArr.map((data: LooseObject, index: number) => (
+                                                                    <div key={index}>
+                                                                        <div className="c-Checkout-card__Item-sub-total">
+                                                                            <p>{data.quantity} x {data.name}</p>
+                                                                            <h2>S${data.totalPrice.toFixed(2)}</h2>
+                                                                        </div>
+                                                                        <hr />
+                                                                    </div>
+                                                                ))
+                                                            }
+                                                            <div className="c-Checkout-card__Sub-total">
+                                                                <h1>Sub Total</h1>
+                                                                <h2>S${orderSummary.subTotal ? orderSummary.subTotal!.toFixed(2) : "Error!"}</h2>
+                                                            </div>
+                                                            <div className="c-Checkout-card__Grand-total">
+                                                                <h1>Grand Total</h1>
+                                                                <h2>S${orderSummary.grandTotal ? orderSummary.grandTotal!.toFixed(2) : "Error!"}</h2>
+                                                            </div>
+                                                        </div>
+                                                        <button type="button" className="c-Btn" onClick={() => history.push("/cart/checkout")}>Checkout</button>
+                                                    </div>
+                                                </div>
+                                            </div>
 
-                                    </>
+                                        </>
                             :
                             <LoggedOut type="Cart" />
                     }
                 </div>
             </div>
         </>
-    
+
     );
 }
 

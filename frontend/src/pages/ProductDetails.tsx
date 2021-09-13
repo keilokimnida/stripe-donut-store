@@ -10,6 +10,8 @@ import { RouteComponentProps, useHistory, NavLink } from 'react-router-dom';
 import axios from 'axios';
 import jwt_decode from "jwt-decode";
 import Skeleton from '@material-ui/lab/Skeleton';
+import { PageStatusEnum } from '../config/enums';
+import Error from "../common/Error";
 
 interface MatchParams {
     name: string;
@@ -46,7 +48,7 @@ const ProductDetails: React.FC<Props> = ({ match }) => {
         price: null,
         description: null
     });
-    const [loading, setLoading] = useState<boolean>(true);
+    const [pageStatus, setPageStatus] = useState<PageStatusEnum>(PageStatusEnum.LOADING);
     const [qty, setQty] = useState<number>(1);
     const [rerender, setRerender] = useState<boolean>(false);
     const [inCartAlready, setInCartAlready] = useState<boolean>(false);
@@ -85,7 +87,8 @@ const ProductDetails: React.FC<Props> = ({ match }) => {
                         setInCartAlready(() => true);
                     }
                     setTimeout(() => {
-                        setLoading(() => false);
+                        setPageStatus(() => PageStatusEnum.ACTIVE); // set page status to active
+
                     }, 300);
                 }
             })
@@ -93,7 +96,7 @@ const ProductDetails: React.FC<Props> = ({ match }) => {
                 console.log(err);
                 if (componentMounted) {
                     setTimeout(() => {
-                        setLoading(() => false);
+                        setPageStatus(() => PageStatusEnum.ERROR); // set page status to error
                     }, 300);
                 }
             });
@@ -170,59 +173,62 @@ const ProductDetails: React.FC<Props> = ({ match }) => {
                 <Header rerender={rerender} />
                 <div className="c-Product-details">
                     {
-                        loading ?
-                            <>
-                                <div className="c-Product-details__Img">
-                                    <Skeleton variant="rect" width={500} height={500} />
-                                </div>
-                                <div className="c-Product-details__Info">
-                                    <h1><Skeleton variant="text" width={"50%"} /></h1>
-                                    <h2><Skeleton variant="text" width={"25%"} /></h2>
-                                    <article>
-                                        <Skeleton variant="text" width={"75%"} />
-                                        <Skeleton variant="text" width={"80%"} />
-                                        <Skeleton variant="text" width={"77"} />
-                                        <Skeleton variant="text" width={"50%"} />
-                                    </article>
-                                    <div className="c-Product-details__Btns ">
-                                        <Skeleton variant="rect" height={42} width={"100%"} />
-                                    </div>
-                                </div>
-                            </>
+                        pageStatus === PageStatusEnum.ERROR ?
+                            <Error />
                             :
-                            <>
-                                <div className="c-Product-details__Img">
-                                    <img src={donutImg} alt="Product" />
-                                </div>
-                                <div className="c-Product-details__Info">
-                                    <h1>{productInfo.productTitle ? productInfo.productTitle : "Error"}</h1>
-                                    <h2>S${productInfo.price ? productInfo.price.toFixed(2) : "Error"}</h2>
-                                    <article>{productInfo.description ? productInfo.description : "Error"}</article>
-                                    {
-                                        token ?
-                                            inCartAlready ?
-                                                <div className="c-Product-details__Btns ">
-                                                    <div className="c-Btns__Added-to-cart">
-                                                        <button type="button" className="c-Btn c-Btn__View" onClick={() => history.push("/cart")}>View in Cart</button>
-                                                        <button type="button" className="c-Btn c-Btn__Remove" onClick={() => handleRemoveFromCart()}>Remove from Cart</button>
+                            pageStatus === PageStatusEnum.LOADING ?
+                                <>
+                                    <div className="c-Product-details__Img">
+                                        <Skeleton variant="rect" width={500} height={500} />
+                                    </div>
+                                    <div className="c-Product-details__Info">
+                                        <h1><Skeleton variant="text" width={"50%"} /></h1>
+                                        <h2><Skeleton variant="text" width={"25%"} /></h2>
+                                        <article>
+                                            <Skeleton variant="text" width={"75%"} />
+                                            <Skeleton variant="text" width={"80%"} />
+                                            <Skeleton variant="text" width={"77"} />
+                                            <Skeleton variant="text" width={"50%"} />
+                                        </article>
+                                        <div className="c-Product-details__Btns ">
+                                            <Skeleton variant="rect" height={42} width={"100%"} />
+                                        </div>
+                                    </div>
+                                </>
+                                :
+                                <>
+                                    <div className="c-Product-details__Img">
+                                        <img src={donutImg} alt="Product" />
+                                    </div>
+                                    <div className="c-Product-details__Info">
+                                        <h1>{productInfo.productTitle ? productInfo.productTitle : "Error"}</h1>
+                                        <h2>S${productInfo.price ? productInfo.price.toFixed(2) : "Error"}</h2>
+                                        <article>{productInfo.description ? productInfo.description : "Error"}</article>
+                                        {
+                                            token ?
+                                                inCartAlready ?
+                                                    <div className="c-Product-details__Btns ">
+                                                        <div className="c-Btns__Added-to-cart">
+                                                            <button type="button" className="c-Btn c-Btn__View" onClick={() => history.push("/cart")}>View in Cart</button>
+                                                            <button type="button" className="c-Btn c-Btn__Remove" onClick={() => handleRemoveFromCart()}>Remove from Cart</button>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                    :
+                                                    <div className="c-Product-details__Btns">
+                                                        <ProductQty qty={qty} setQty={setQty} variation="productDetails" productID={productID} />
+                                                        <div className="c-Btns__Add-to-cart">
+                                                            <button type="button" className="c-Btn" onClick={() => handleAddToCartBtn()}>Add to Cart</button>
+                                                        </div>
+                                                    </div>
                                                 :
-                                                <div className="c-Product-details__Btns">
-                                                    <ProductQty qty={qty} setQty={setQty} variation="productDetails" productID={productID} />
-                                                    <div className="c-Btns__Add-to-cart">
-                                                        <button type="button" className="c-Btn" onClick={() => handleAddToCartBtn()}>Add to Cart</button>
-                                                    </div>
-                                                </div>
-                                            :
-                                            <>
-                                                <h3>Please Login to Add Product to Cart!</h3>
-                                                <NavLink to="/login">Go to Login</NavLink>
-                                            </>
-                                    }
-                                </div>
+                                                <>
+                                                    <h3>Please Login to Add Product to Cart!</h3>
+                                                    <NavLink to="/login">Go to Login</NavLink>
+                                                </>
+                                        }
+                                    </div>
 
-                            </>
+                                </>
                     }
 
                 </div>
