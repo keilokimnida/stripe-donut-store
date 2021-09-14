@@ -5,7 +5,7 @@ const cartController = require("./controllers/cart");
 const productController = require("./controllers/product");
 const membershipController = require("./controllers/membership");
 const stripeController = require("./controllers/stripe");
-const receiptsController = require("./controllers/receipts");
+const ordersController = require("./controllers/orders");
 
 // MIDDLEWARES
 const { isLoggedIn } = require("./middlewares/login");
@@ -37,8 +37,8 @@ module.exports = router => {
     // ACCOUNT
     router.get("/api/v1/account/:accountID", isLoggedIn, accountController.findAccountByID);
     
-    // RECEIPT
-    router.post("/api/v1/orders", isLoggedIn, calculateProductsTotalPrice, receiptsController.insertOrder);
+    // ORDERS
+    router.post("/api/v1/orders", isLoggedIn, calculateProductsTotalPrice, ordersController.insertOrder);
 
     // PRODUCTS
     router.get("/api/v1/products", productController.findAllProducts);
