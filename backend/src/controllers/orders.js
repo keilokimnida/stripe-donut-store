@@ -14,15 +14,15 @@ module.exports.insertOrder = async (req, res) => {
             message: "Invalid parameter \"accountID\""
         });
 
-        const {stripeReceiptUrl, stripePaymentMethodType, stripePaymentMethodLastFourDigit} = req.body;
+        const { stripePaymentMethodType, stripePaymentMethodLastFourDigit } = req.body;
 
-        if (!(stripeReceiptUrl && stripePaymentMethodCard && stripePaymentMethodLastFourDigit)) {
+        if (!(stripePaymentMethodType && stripePaymentMethodLastFourDigit)) {
             return res.status(400).json({
                 message: "Invalid parameter!"
             });
         }
 
-        await insertOrder(accountID, stripeReceiptUrl, stripePaymentMethodType, stripePaymentMethodLastFourDigit, totalPrice);
+        await insertOrder(accountID, stripePaymentMethodType, stripePaymentMethodLastFourDigit, totalPrice);
 
         return res.status(200).send();
 

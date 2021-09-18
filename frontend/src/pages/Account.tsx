@@ -64,21 +64,20 @@ const Account: React.FC = () => {
                 const data = res.data;
                 if (componentMounted) {
 
-                    if (data.account && data.receipts) {
+                    if (data.account && data.orders) {
                         setProfileData(() => ({
                             firstName: data.account.firstname,
                             lastName: data.account.lastname,
                             email: data.account.email,
                             username: data.account.username
                         }));
-                        setPaymentHistory(() => data.receipts.map((receipt: any, index: number) => ({
+                        setPaymentHistory(() => data.orders.map((order: any, index: number) => ({
                             serialNo: index + 1,
-                            receiptID: receipt.receipt_id,
-                            amount: "S$" + receipt.amount,
-                            cardType: receipt.stripe_payment_method_card,
-                            cardLastFourDigit: "●●●● " + receipt.stripe_payment_method_last_four_digit,
-                            receiptUrl: receipt.stripe_receipt_url,
-                            createdAt: dayjs(new Date(receipt.created_at)).format("MMMM D, YYYY h:mm A"),
+                            orderID: order.order_id,
+                            amount: "S$" + order.amount,
+                            cardType: order.stripe_payment_method_type,
+                            cardLastFourDigit: "●●●● " + order.stripe_payment_method_last_four_digit,
+                            createdAt: dayjs(new Date(order.created_at)).format("MMMM D, YYYY h:mm A"),
                         })));
                         setPaymentMethods(() => data.account.payment_accounts.map((paymentAccount: any, index: number) => ({
                             serialNo: index + 1,
@@ -116,7 +115,7 @@ const Account: React.FC = () => {
 
     const paymentHistoryColumn = [
         {
-            dataField: 'receiptID',
+            dataField: 'orderID',
             text: 'Id',
             hidden: true
         },
@@ -132,17 +131,17 @@ const Account: React.FC = () => {
             dataField: 'cardType',
             text: 'Card Type',
             formatter: (cell: any, row: any) => {
-                if (cell === "Visa") {
+                if (cell === "visa") {
                     return <ReactSVG
                         src={visaSVG}
                         className="c-Payment-history__SVG c-SVG__Visa"
                     />
-                } else if (cell === "MasterCard") {
+                } else if (cell === "mastercard") {
                     return <ReactSVG
                         src={MCSVG}
                         className="c-Payment-history__SVG c-SVG__Master"
                     />
-                } else if (cell === "American Express") {
+                } else if (cell === "amex") {
                     return <ReactSVG
                         src={amexSVG}
                         className="c-Payment-history__SVG c-SVG__Amex"
@@ -159,13 +158,6 @@ const Account: React.FC = () => {
         {
             dataField: 'createdAt',
             text: 'Paid on'
-        },
-        {
-            dataField: 'receiptUrl',
-            text: '',
-            formatter: (cell: any, row: any) => {
-                return <a href={cell} target="_blank" rel="noopener noreferrer">View Receipt</a>
-            }
         }
     ];
     const paymentMethodsColumn = [
@@ -182,17 +174,17 @@ const Account: React.FC = () => {
             dataField: 'cardType',
             text: 'Card Type',
             formatter: (cell: any, row: any) => {
-                if (cell === "Visa") {
+                if (cell === "visa") {
                     return <ReactSVG
                         src={visaSVG}
                         className="c-Payment-history__SVG c-SVG__Visa"
                     />
-                } else if (cell === "MasterCard") {
+                } else if (cell === "mastercard") {
                     return <ReactSVG
                         src={MCSVG}
                         className="c-Payment-history__SVG c-SVG__Master"
                     />
-                } else if (cell === "American Express") {
+                } else if (cell === "amex") {
                     return <ReactSVG
                         src={amexSVG}
                         className="c-Payment-history__SVG c-SVG__Amex"
@@ -254,7 +246,12 @@ const Account: React.FC = () => {
                                 <>
                                     {/* Profile */}
                                     <div className="c-Account__Profile">
-                                        <h1>Profile</h1>
+                                        <div className="c-Account__Heading">
+                                            <h1>Profile</h1>
+                                            <div className="c-Heading__Btn">
+                                                <button type="button" className="c-Btn">Edit</button>
+                                            </div>
+                                        </div>
                                         <hr />
                                         <div className="c-Profile__Details">
                                             <div className="c-Profile__Labels">
@@ -292,7 +289,12 @@ const Account: React.FC = () => {
                                     </div>
                                     {/* Payment methods */}
                                     <div className="c-Account__Payment-method">
-                                        <h1>Payment Methods</h1>
+                                        <div className="c-Account__Heading">
+                                            <h1>Payment Methods</h1>
+                                            <div className="c-Heading__Btn">
+                                                <button type="button" className="c-Btn">Add</button>
+                                            </div>
+                                        </div>
                                         <hr />
                                         {
                                             paymentMethods.length === 0 ?
@@ -309,7 +311,9 @@ const Account: React.FC = () => {
                                     </div>
                                     {/* Payment history */}
                                     <div className="c-Account__Payment-history">
-                                        <h1>Payment History</h1>
+                                        <div className="c-Account__Heading">
+                                            <h1>Payment History</h1>
+                                        </div>
                                         <hr />
                                         <div className="c-Payment-history__Details">
                                             {
@@ -325,11 +329,11 @@ const Account: React.FC = () => {
                                             }
                                         </div>
                                     </div>
-                                    {/* Subscription */}
-                                    <div className="c-Account__Subscription">
-                                        <h1>Subscription</h1>
+                                    {/* Membership */}
+                                    <div className="c-Account__Membership">
+                                        <h1>Membership</h1>
                                         <hr />
-
+                                        <p>No Records Found!</p>
                                     </div>
                                 </>
                             :

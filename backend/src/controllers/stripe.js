@@ -1,5 +1,8 @@
-const { createPaymentIntent, createStripeCustomer, findStripeCustomerPaymentMethods, updatePaymentIntent } = require('../services/stripe');
-const { findAccountByID, updateAccountByID } = require('../models/account');
+const { createPaymentIntent, createStripeCustomer, findStripeCustomerPaymentMethods, updatePaymentIntent, findStripeCustomerPaymentMethod } = require('../services/stripe');
+const { findAccountByID, updateAccountByID, findAccountByStripeCustID } = require('../models/account');
+const { deleteAllCartItemByAccountID } = require('../models/cart');
+const { insertOrder } = require('../models/orders');
+const { insertPaymentMethod, updatePaymentMethod, findPaymentMethodID, removePaymentMethod, findPaymentMethodByAccountIDAndPaymentMethodID } = require('../models/paymentMethods');
 
 // Create payment intent
 module.exports.createPaymentIntent = async (req, res) => {
@@ -36,7 +39,7 @@ module.exports.createPaymentIntent = async (req, res) => {
             clientSecret = account.stripe_payment_intent_client_secret;
         }
 
-        return res.status(200).send({clientSecret});
+        return res.status(200).send({ clientSecret });
 
     } catch (error) {
         console.log(error);
@@ -94,3 +97,125 @@ module.exports.updatePaymentIntent = async (req, res) => {
     }
 };
 
+// Handle webhook
+module.exports.handleWebhook = async (req, res) => {
+    try {
+        const event = req.body;
+
+        // Handle the event
+        switch (event.type) {
+            // Customer add payment method
+            case 'payment_method.attached': {
+                const paymentMethod = event.data.object;
+                console.log(paymentMethod);
+
+                const stripePaymentMethodID = paymentMethod.id;
+                const stripeCardFingerprint = paymentMethod.card.fingerprint;
+                const stripeCardLastFourDigit = paymentMethod.card.last4;
+                const stripeCardType = paymentMethod.card.brand;
+                const stripeCustomerID = paymentMethod.customer;
+
+                // Find account id based on stripe customer id
+                const account = await findAccountByStripeCustID(stripeCustomerID);
+                const accountID = account.account_id;
+
+                // Insert payment method
+                await insertPaymentMethod(accountID, stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType);
+
+                break;
+            }
+            // Stripe update payment method
+            case 'payment_method.automatically_updated': {
+                const paymentMethod = event.data.object;
+                console.log(paymentMethod);
+
+                const stripeCardFingerprint = paymentMethod.card.fingerprint;
+                const stripeCardLastFourDigit = paymentMethod.card.last4;
+                const stripeCardType = paymentMethod.card.brand;
+                const stripePaymentMethodID = paymentMethod.id;
+
+                // Update payment method
+                await updatePaymentMethod(stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType);
+                break;
+            }
+            // Customer remove payment method
+            case 'payment_method.detached': {
+                const paymentMethod = event.data.object;
+                console.log(paymentMethod);
+                // find payment intent id (local)
+                const stripePaymentMethodID = paymentMethod.id;
+                const stripeCustomerID = paymentMethod.customer;
+
+                // Find account id based on stripe customer id
+                const account = await findAccountByStripeCustID(stripeCustomerID);
+                const accountID = account.account_id;
+
+                // Find local payment method id
+                const paymentMethodID = await findPaymentMethodID(stripePaymentMethodID);
+
+                // Find payment method method based on account id and local payment method id
+                const foundPaymentMethod = await findPaymentMethodByAccountIDAndPaymentMethodID(paymentMethodID, accountID);
+
+                // remove payment method
+                await removePaymentMethod(foundPaymentMethod);
+
+                break;
+            }
+            // Customer update payment method
+            case 'payment_method.updated': {
+                const paymentMethod = event.data.object;
+                console.log(paymentMethod);
+
+                const stripeCardFingerprint = paymentMethod.card.fingerprint;
+                const stripeCardLastFourDigit = paymentMethod.card.last4;
+                const stripeCardType = paymentMethod.card.brand;
+                const stripePaymentMethodID = paymentMethod.id;
+
+                // Update payment method
+                await updatePaymentMethod(stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType);
+                break;
+            }
+            // Payment intent success
+            case 'payment_intent.succeeded': {
+                const paymentIntent = event.data.object;
+
+                // Find out account id from stripe customer id
+                const stripeCustomerID = paymentIntent.customer;
+                const stripePaymentMethodID = paymentIntent.payment_method;
+                const amount = paymentIntent.amount / 100;
+
+                const account = await findAccountByStripeCustID(stripeCustomerID);
+                const accountID = account.account_id;
+                console.log(1);
+                // Remove customer payment intent
+                await updateAccountByID(accountID, {
+                    stripe_payment_intent_client_secret: null,
+                    stripe_payment_intent_id: null
+                });
+                console.log(2);
+                // Remove customer cart
+                await deleteAllCartItemByAccountID(accountID);
+                console.log(3);
+                // Find payment method details
+                const paymentMethod = await findStripeCustomerPaymentMethod(stripePaymentMethodID); 
+                const paymentType = paymentMethod.card.brand;
+                const cardLastFourDigit = paymentMethod.card.last4;
+         
+                // Add to order table
+                await insertOrder(accountID, paymentType, cardLastFourDigit, amount);
+                console.log(4);
+                break;
+            }
+            // Unexpected event type
+            default:
+                console.log(`Unhandled event type ${event.type}.`);
+        };
+
+        return res.status(200).send();
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Error in controller > stripe.js! " + error);
+    }
+
+}

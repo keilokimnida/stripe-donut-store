@@ -17,7 +17,8 @@ module.exports = {
     },
     stripe: {
         test: {
-            sk: process.env.STRIPE_TEST_SK
+            secretKey: process.env.STRIPE_TEST_SK,
+            webhookSecret: process.env.STRIPE_WEBHOOK_SECRET
         }
     }
 }

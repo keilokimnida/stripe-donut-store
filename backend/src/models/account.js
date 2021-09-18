@@ -15,3 +15,13 @@ module.exports.updateAccountByID = (accountID, content) => Accounts.update({
         account_id: accountID
     }
 })
+
+module.exports.findAccountByStripeCustID = (stripeCustomerID) => Accounts.findOne({
+    where: {
+        stripe_customer_id: stripeCustomerID
+    },
+    include: [{
+        model: PaymentMethods,
+        as: "payment_accounts"
+    }] 
+});

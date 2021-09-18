@@ -122,10 +122,12 @@ const Checkout: React.FC = () => {
                             console.log("paymentIntent");
                             console.log(paymentIntent);
                             setClientSecret(() => paymentIntent!.data.clientSecret);
+                            console.log(paymentIntent!.data.paymentIntentID);
                             setPaymentIntentID(() => paymentIntent!.data.paymentIntentID);
                         } else {
                             console.log(cartData.account.stripe_payment_intent_client_secret)
                             setClientSecret(() => (cartData.account.stripe_payment_intent_client_secret));
+                            console.log(cartData.account.stripe_payment_intent_id);
                             setPaymentIntentID(() => cartData.account.stripe_payment_intent_id);
                         }
 
@@ -152,14 +154,14 @@ const Checkout: React.FC = () => {
         });
 
     }, [rerender]);
-
+    console.log(paymentIntentID);
 
     const cardStyle = {
         hidePostalCode: true,
         style: {
             base: {
                 color: "#32325d",
-                fontFamily: 'Arial, sans-serif',
+                fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
                 fontSmoothing: "antialiased",
                 fontSize: "16px",
                 "::placeholder": {
@@ -169,6 +171,10 @@ const Checkout: React.FC = () => {
             invalid: {
                 color: "#fa755a",
                 iconColor: "#fa755a"
+            },
+            complete: {
+                color: '#45bc42',
+                iconColor: '#45bc42'
             }
         }
     };

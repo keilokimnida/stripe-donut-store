@@ -72,37 +72,47 @@ const ProductDetails: React.FC<Props> = ({ match }) => {
             .catch((err) => {
                 console.log(err);
             });
-        // check if user has added it in cart already
-        axios.get(`${config.baseUrl}/cart/${productID}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then((res) => {
-                console.log(res);
-                if (componentMounted) {
-                    if (res.data === "") {
-                        setInCartAlready(() => false);
-                    } else {
-                        setInCartAlready(() => true);
-                    }
-                    setTimeout(() => {
-                        setPageStatus(() => PageStatusEnum.ACTIVE); // set page status to active
-
-                    }, 300);
+        if (token) {
+            // check if user has added it in cart already
+            axios.get(`${config.baseUrl}/cart/${productID}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
             })
-            .catch((err) => {
-                console.log(err);
-                if (componentMounted) {
-                    setTimeout(() => {
-                        setPageStatus(() => PageStatusEnum.ERROR); // set page status to error
-                    }, 300);
-                }
-            });
+                .then((res) => {
+                    console.log(res);
+                    if (componentMounted) {
+                        if (res.data === "") {
+                            setInCartAlready(() => false);
+                        } else {
+                            setInCartAlready(() => true);
+                        }
+                        setTimeout(() => {
+                            setPageStatus(() => PageStatusEnum.ACTIVE); // set page status to active
+                        }, 300);
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                    if (componentMounted) {
+                        setTimeout(() => {
+                            setPageStatus(() => PageStatusEnum.ERROR); // set page status to error
+                        }, 300);
+                    }
+                });
+        } else {
+            if (componentMounted) {
+                setTimeout(() => {
+                    setPageStatus(() => PageStatusEnum.ACTIVE); // set page status to active
+
+                }, 300);
+            }
+        }
         return (() => {
             componentMounted = false;
         });
+
+
     }, [rerender]);
 
     // Handlers

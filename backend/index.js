@@ -4,6 +4,9 @@ const { Products } = require("./src/model_definitions/Products");
 const { CartItem } = require("./src/model_definitions/CartItem");
 const { Membership } = require("./src/model_definitions/Membership");
 const { Orders } = require("./src/model_definitions/Orders");
+const { PaymentMethods } = require("./src/model_definitions/PaymentMethods");
+const { Accounts_PaymentMethods } = require("./src/model_definitions/Accounts_PaymentMethods");
+
 
 const express = require("express");
 const cors = require("cors");

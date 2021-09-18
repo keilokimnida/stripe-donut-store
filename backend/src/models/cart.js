@@ -1,5 +1,5 @@
 const { CartItem } = require("../model_definitions/CartItem");
-const { Account } = require("../model_definitions/Accounts");
+const { Accounts } = require("../model_definitions/Accounts");
 
 // Get cart by account id
 module.exports.findCartItemsByAccountID = (accountID) => CartItem.findAll({

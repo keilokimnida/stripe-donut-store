@@ -5,7 +5,7 @@ const { Accounts } = require("./Accounts");
 const Orders = db.define(
     "Orders",
     {
-        receipt_id: {
+        order_id: {
             type: DataTypes.INTEGER.UNSIGNED,
             primaryKey: true,
             autoIncrement: true

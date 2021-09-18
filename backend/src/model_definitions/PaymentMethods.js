@@ -9,20 +9,21 @@ const PaymentMethods = db.define(
             primaryKey: true,
             autoIncrement: true
         },
+        stripe_payment_method_id: {
+            type: DataTypes.STRING(255),
+            allowNull: false
+        },
         stripe_payment_method_fingerprint: {
             type: DataTypes.STRING(255),
-            allowNull: false,
-            unique: true
+            allowNull: false
         },
         stripe_card_last_four_digit: {
             type: DataTypes.STRING(255),
-            allowNull: false,
-            unique: true
+            allowNull: false
         },
         stripe_card_type: {
             type: DataTypes.STRING(255),
-            allowNull: false,
-            unique: true
+            allowNull: false
         }
     },
     {

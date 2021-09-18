@@ -10,9 +10,7 @@ const ordersController = require("./controllers/orders");
 // MIDDLEWARES
 const { isLoggedIn } = require("./middlewares/login");
 const { calculateProductsTotalPrice } = require("./middlewares/payment");
-
-// WEBHOOK SECRET
-const endpointSecret = 'whsec_...';
+const { verifyStripeWebhookRequest } = require("./middlewares/access");
 
 module.exports = router => {
 
@@ -22,7 +20,7 @@ module.exports = router => {
     })
 
     // WEBHOOKS
-    router.post("/api/v1/webhooks/stripe/");
+    router.post("/api/v1/webhooks/stripe", verifyStripeWebhookRequest, stripeController.handleWebhook);
 
     // LOGIN
     router.post("/api/v1/login", authController.clientLogin);

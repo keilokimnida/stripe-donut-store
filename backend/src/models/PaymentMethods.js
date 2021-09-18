@@ -1,11 +1,12 @@
-const { PaymentMethods } = require("../models/PaymentMethods");
-const { Accounts_PaymentMethods } = require("../models/Accounts_PaymentMethods");
+const { PaymentMethods } = require("../model_definitions/PaymentMethods");
+const { Accounts_PaymentMethods } = require("../model_definitions/Accounts_PaymentMethods");
 
-module.exports.insertPaymentMethod = (accountID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType) => {
+module.exports.insertPaymentMethod = async (accountID, stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType) => {
 
     const paymentMethods = await PaymentMethods.create({
-        stripe_paymemt_method_fingerprint: stripeCardFingerprint,
-        stripe_last_four_digit:  stripeCardLastFourDigit,
+        stripe_payment_method_id: stripePaymentMethodID,
+        stripe_payment_method_fingerprint: stripeCardFingerprint,
+        stripe_card_last_four_digit: stripeCardLastFourDigit,
         stripe_card_type: stripeCardType
     });
 
@@ -30,3 +31,29 @@ module.exports.findPaymentMethodsByAccountID = (accountID) => Accounts_PaymentMe
         fk_account_id: accountID
     }
 });
+
+module.exports.findPaymentMethodID = (stripePaymentMethodID) => PaymentMethods.findOne({
+    where: {
+        stripe_payment_method_id: stripePaymentMethodID
+    },
+    attributes: [payment_methods_id]
+});
+
+module.exports.findPaymentMethodByAccountIDAndPaymentMethodID = (paymentIntentID, accountID) => Accounts_PaymentMethods.findAll({
+    where: {
+        fk_payment_methods_id: paymentIntentID,
+        fk_account_id: accountID
+    }
+});
+
+module.exports.updatePaymentMethod = (stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType) => PaymentMethods.update({
+    stripe_payment_method_fingerprint: stripeCardFingerprint,
+    stripe_last_four_digit: stripeCardLastFourDigit,
+    stripe_card_type: stripeCardType
+}, {
+    where: {
+        stripe_payment_method_id: stripePaymentMethodID
+    }
+});
+
+module.exports.removePaymentMethod = (paymentMethod) => paymentMethod.destroy();

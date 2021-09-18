@@ -15,20 +15,29 @@ import { getToken } from './utilities/localStorageUtils';
 
 
 // Guard to check if user has token
-const authGuard = (Component: React.FC<any>) => (props : any) => {
+const authGuard = (Component: React.FC<any>, login?: boolean) => (props : any) => {
     const token = getToken();
-    if (!token) {
-        return (<Redirect to="/login" {...props} />);
+    if (login) {
+        // If user attempts to go to login page with token, Redirect user to dashboard page if token already exists
+        if (token) {
+            return (<Redirect to="/" {...props} />);
+        } else {
+            return (<Component {...props} />);
+        }
     } else {
-        return (<Component {...props} />);
+        if (!token) {
+            return (<Redirect to="/login" {...props} />);
+        } else {
+            return (<Component {...props} />);
+        }
     }
-}
+};
 
 const Routes: React.FC = () => {
     return (
         <Router>
             <Switch>
-                <Route path ="/login" render={() => <Login />}/>
+                <Route path ="/login" render={(props) => authGuard(Login, true)(props)}/>
                 <Route exact path="/">
                     <Redirect to="/products" />
                 </Route>

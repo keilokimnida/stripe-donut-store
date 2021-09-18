@@ -1,7 +1,7 @@
 const config = require("../config/config");
 
 // Test secret API Key
-const stripe = require("stripe")(config.stripe.test.sk);
+const stripe = require("stripe")(config.stripe.test.secretKey);
 
 // Create payment intent
 module.exports.createPaymentIntent = (totalPrice, stripeCustomerID) => stripe.paymentIntents.create({
@@ -17,15 +17,24 @@ module.exports.createStripeCustomer = (email, name) => stripe.customers.create({
     name
 });
 
+// Get payment methods by ID
 module.exports.findStripeCustomerPaymentMethods = (stripeCustomerID) => stripe.paymentMethods.list({
   customer: stripeCustomerID,
   type: 'card'
 });
 
+// Get payment method by stripe payment method id
+module.exports.findStripeCustomerPaymentMethod = (stripePaymentMethodID) => stripe.paymentMethods.retrieve(
+  stripePaymentMethodID
+);
+
+
+// Update payment intent
 module.exports.updatePaymentIntent = (paymentIntentID, totalPrice) => stripe.paymentIntents.update(
   paymentIntentID, {
     amount: totalPrice,
     currency: "sgd"
 });
 
+// Cancel payment intent
 module.exports.cancelPaymentIntent = (paymentIntentID) => stripe.paymentIntents.cancel(paymentIntentID);

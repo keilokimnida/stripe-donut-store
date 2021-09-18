@@ -33,6 +33,7 @@ const Header: React.FC<Props> = ({ rerender }) => {
 
     const history = useHistory();
     const token: string | null = getToken();
+    const toastTiming = config.toastTiming;
     let accountID: string;
     if (token) {
         const decodedToken: LooseObject = jwt_decode(token!);
@@ -84,9 +85,12 @@ const Header: React.FC<Props> = ({ rerender }) => {
     };
 
     const handleLogOutClick = (): void => {
+        console.log("testing");
         clearLocalStorage();
         history.push("/login");
-        toast.success('Successfully logged out!');
+        setTimeout(() => {
+            toast.success('Successfully logged out!');
+        }, 0);
     };
 
     return (
@@ -123,11 +127,18 @@ const Header: React.FC<Props> = ({ rerender }) => {
                             </Tooltip>
                             {
                                 isProfilePopUpOpen ?
+                                    token ? 
                                     <div className="l-Header__Profile-pop-up" >
                                         <div className="c-Header__Profile-pop-up">
                                             <button onClick={() => history.push("/account")}>My Account</button>
                                             <hr />
                                             <button onClick={handleLogOutClick}>Log out</button>
+                                        </div>
+                                    </div>
+                                    :
+                                    <div className="l-Header__Profile-pop-up" >
+                                        <div className="c-Header__Profile-pop-up">
+                                            <button onClick={() => history.push("/login")}>Login</button>
                                         </div>
                                     </div>
                                     :
