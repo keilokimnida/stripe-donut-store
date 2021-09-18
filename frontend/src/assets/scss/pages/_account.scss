@@ -81,6 +81,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            .c-Heading__Text {
+                width: 100%;
+                h1 {
+                    
+                    color: $stripe-text-dark;
+                    font-weight: bold;
+                    font-size: $font-large;
+                }
+                p {
+                    width: 100%;
+                    color: $stripe-text-dark;
+                    font-size: $font-small;
+                }
+            }
             h1 {
                 width: 100%;
                 color: $stripe-text-dark;

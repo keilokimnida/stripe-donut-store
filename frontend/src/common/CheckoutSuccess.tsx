@@ -12,7 +12,7 @@ const CheckoutSuccess: React.FC = () => {
             </span>
             <h1>Checkout was Successful!</h1>
             <p>We have sent you a receipt through your email</p>
-            <p>List of Receipts can be Found in <NavLink to="/products">Profile</NavLink></p>
+            <p>List of Receipts can be Found in <NavLink to="/accounts">My Account</NavLink></p>
         </div>
     )
 }

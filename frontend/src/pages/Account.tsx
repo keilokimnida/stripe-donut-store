@@ -290,7 +290,10 @@ const Account: React.FC = () => {
                                     {/* Payment methods */}
                                     <div className="c-Account__Payment-method">
                                         <div className="c-Account__Heading">
-                                            <h1>Payment Methods</h1>
+                                            <div className="c-Heading__Text">
+                                                <h1>Payment Methods</h1>
+                                                <p>Add a payment method to save time during checkout!</p>
+                                            </div>
                                             <div className="c-Heading__Btn">
                                                 <button type="button" className="c-Btn">Add</button>
                                             </div>
@@ -312,8 +315,13 @@ const Account: React.FC = () => {
                                     {/* Payment history */}
                                     <div className="c-Account__Payment-history">
                                         <div className="c-Account__Heading">
+                                          
+                                            <div className="c-Heading__Text">
                                             <h1>Payment History</h1>
+                                            <p>Payment history for membership and products. Receipt is sent to billing email.</p>
                                         </div>
+                                        </div>
+                                        
                                         <hr />
                                         <div className="c-Payment-history__Details">
                                             {

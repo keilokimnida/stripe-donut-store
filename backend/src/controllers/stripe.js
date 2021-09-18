@@ -24,11 +24,12 @@ module.exports.createPaymentIntent = async (req, res) => {
         });
 
         let clientSecret;
+        let paymentIntentID;
 
         if (account.stripe_payment_intent_id === null) {
             const paymentIntent = await createPaymentIntent(totalPrice, account.stripe_customer_id);
             clientSecret = paymentIntent.client_secret;
-            const paymentIntentID = paymentIntent.id;
+            paymentIntentID = paymentIntent.id;
             const updateAccountContent = {
                 stripe_payment_intent_id: paymentIntentID,
                 stripe_payment_intent_client_secret: clientSecret
@@ -37,9 +38,10 @@ module.exports.createPaymentIntent = async (req, res) => {
             await updateAccountByID(accountID, updateAccountContent);
         } else {
             clientSecret = account.stripe_payment_intent_client_secret;
+            paymentIntentID = account.stripe_payment_intent_id;
         }
 
-        return res.status(200).send({ clientSecret });
+        return res.status(200).send({ clientSecret, paymentIntentID });
 
     } catch (error) {
         console.log(error);
