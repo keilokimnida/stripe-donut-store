@@ -45,7 +45,7 @@ const Checkout: React.FC = () => {
     });
     const [rerender, setRerender] = useState<boolean>(false);
     const [pageStatus, setPageStatus] = useState<PageStatusEnum>(PageStatusEnum.LOADING);
-    const [saveCard, setSaveCard] = useState<boolean>(false);
+    // const [saveCard, setSaveCard] = useState<boolean>(false);
     const [paymentMethods, setPaymentMethods] = useState<[]>([]);
 
     // Stripe
@@ -165,10 +165,6 @@ const Checkout: React.FC = () => {
             invalid: {
                 color: "#fa755a",
                 iconColor: "#fa755a"
-            },
-            complete: {
-                color: '#45bc42',
-                iconColor: '#45bc42'
             }
         }
     };
@@ -212,18 +208,24 @@ const Checkout: React.FC = () => {
         // Only confirm payment if price update is successful
         if (paymentIntentUpdateSuccess) {
             console.log(paymentIntentID);
-            let setup_future_usage: PaymentIntentConfirmParams.SetupFutureUsage | null | undefined = null;
+            // let setup_future_usage: PaymentIntentConfirmParams.SetupFutureUsage | null | undefined = null;
 
-            if (saveCard) {
-                setup_future_usage = "off_session";
-            }
+            // if (saveCard) {
+            //     setup_future_usage = "off_session";
+            // }
 
             // Confirm card payment
+            // const payload: any = await stripe!.confirmCardPayment(clientSecret!, {
+            //     payment_method: {
+            //         card: elements!.getElement(CardElement)!
+            //     },
+            //     setup_future_usage
+            // });
+
             const payload: any = await stripe!.confirmCardPayment(clientSecret!, {
                 payment_method: {
                     card: elements!.getElement(CardElement)!
-                },
-                setup_future_usage
+                }
             });
 
             if (payload.error) {
@@ -241,9 +243,9 @@ const Checkout: React.FC = () => {
 
     };
 
-    const handleCheckboxChange = () => {
-        setSaveCard((prevState) => !prevState);
-    };
+    // const handleCheckboxChange = () => {
+    //     setSaveCard((prevState) => !prevState);
+    // };
 
     return (
         <>
@@ -303,23 +305,24 @@ const Checkout: React.FC = () => {
                                                     <p>Not available.</p>
                                                 </div>
                                                 <div className="c-Left__Card-info">
-                                                    <h2>Payment Information</h2>
-                                                    <div className="l-Card-info__Card-element">
-                                                        <div className="c-Card-info__Card-element">
-                                                            {/* Card input is rendered here */}
-                                                            <CardElement options={cardStyle} onChange={handleCardInputChange} />
-                                                        </div>
-                                                    </div>
+                                                    <h2>Payment Mode</h2>
                                                     {/* Show any error that happens when processing the payment */}
                                                     {paymentError && (
                                                         <div className="card-error" role="alert">
                                                             {paymentError}
                                                         </div>
                                                     )}
+                                                    {/* Payment element here (commented out because not using) */}
+                                                    {/* <div className="l-Card-info__Card-element">
+                                                        <div className="c-Card-info__Card-element">
+                                                            <CardElement options={cardStyle} onChange={handleCardInputChange} />
+                                                        </div>
+                                                    </div>
+
                                                     <div className="c-Card-info__Save-card">
                                                         <input name="saveCard" type="checkbox" onChange={handleCheckboxChange} checked={saveCard} value="saveCard" />
                                                         <label htmlFor="saveCard">Save Card for Future Payments</label>
-                                                    </div>
+                                                    </div> */}
 
                                                 </div>
                                                 <button

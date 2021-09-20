@@ -17,12 +17,20 @@ const PaymentMethods = db.define(
             type: DataTypes.STRING(255),
             allowNull: false
         },
+        stripe_card_exp_date: {
+            type: DataTypes.STRING(255),
+            allowNull: false
+        },
         stripe_card_last_four_digit: {
             type: DataTypes.STRING(255),
             allowNull: false
         },
         stripe_card_type: {
             type: DataTypes.STRING(255),
+            allowNull: false
+        },
+        card_bg_variation: {
+            type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false
         }
     },

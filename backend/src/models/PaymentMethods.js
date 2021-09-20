@@ -1,13 +1,15 @@
 const { PaymentMethods } = require("../model_definitions/PaymentMethods");
 const { Accounts_PaymentMethods } = require("../model_definitions/Accounts_PaymentMethods");
 
-module.exports.insertPaymentMethod = async (accountID, stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType) => {
+module.exports.insertPaymentMethod = async (accountID, stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType, stripeCardExpDate, cardBGVariation) => {
 
     const paymentMethods = await PaymentMethods.create({
         stripe_payment_method_id: stripePaymentMethodID,
         stripe_payment_method_fingerprint: stripeCardFingerprint,
         stripe_card_last_four_digit: stripeCardLastFourDigit,
-        stripe_card_type: stripeCardType
+        stripe_card_type: stripeCardType,
+        stripe_card_exp_date: stripeCardExpDate,
+        card_bg_variation: cardBGVariation
     });
 
     try {
@@ -46,10 +48,12 @@ module.exports.findPaymentMethodByAccountIDAndPaymentMethodID = (paymentIntentID
     }
 });
 
-module.exports.updatePaymentMethod = (stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType) => PaymentMethods.update({
+module.exports.updatePaymentMethod = (stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType, stripeCardExpDate, cardBGVariation) => PaymentMethods.update({
     stripe_payment_method_fingerprint: stripeCardFingerprint,
     stripe_last_four_digit: stripeCardLastFourDigit,
-    stripe_card_type: stripeCardType
+    stripe_card_type: stripeCardType,
+    stripe_card_exp_date: stripeCardExpDate,
+    card_bg_variation: cardBGVariation
 }, {
     where: {
         stripe_payment_method_id: stripePaymentMethodID

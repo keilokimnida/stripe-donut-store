@@ -49,6 +49,22 @@ module.exports.createPaymentIntent = async (req, res) => {
     }
 };
 
+module.exports.confirmPaymentIntent = async (req, res) => {
+    try {
+        const { stripePaymentMethodID, stripePaymentIntentID } = req.body;
+
+        if (!stripePaymentMethodID) return res.status(400).json({
+            message: "Cannot find parameter \"paymentIntentID\""
+        });
+
+        const paymentIntent = await confirmPaymentIntent(stripePaymentMethodID, stripePaymentIntentID);
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Error in controller > stripe.js! " + error);
+    }
+};
+
 // Create stripe customer
 module.exports.createStripeCustomer = async (req, res) => {
     try {
@@ -115,14 +131,18 @@ module.exports.handleWebhook = async (req, res) => {
                 const stripeCardFingerprint = paymentMethod.card.fingerprint;
                 const stripeCardLastFourDigit = paymentMethod.card.last4;
                 const stripeCardType = paymentMethod.card.brand;
+                const stripeCardExpMonth = paymentMethod.card.exp_month.toString();
+                const stripeCardExpYear = paymentMethod.card.exp_year.toString();
+                const stripeCardExpDate = stripeCardExpMonth + "/" + stripeCardExpYear.charAt(2) + stripeCardExpYear.charAt(3);
                 const stripeCustomerID = paymentMethod.customer;
+                const cardBGVariation = Math.floor(Math.random() + 1);
 
                 // Find account id based on stripe customer id
                 const account = await findAccountByStripeCustID(stripeCustomerID);
                 const accountID = account.account_id;
 
                 // Insert payment method
-                await insertPaymentMethod(accountID, stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType);
+                await insertPaymentMethod(accountID, stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType, stripeCardExpDate, cardBGVariation);
 
                 break;
             }
@@ -134,10 +154,14 @@ module.exports.handleWebhook = async (req, res) => {
                 const stripeCardFingerprint = paymentMethod.card.fingerprint;
                 const stripeCardLastFourDigit = paymentMethod.card.last4;
                 const stripeCardType = paymentMethod.card.brand;
+                const stripeCardExpMonth = paymentMethod.card.exp_month.toString();
+                const stripeCardExpYear = paymentMethod.card.exp_year.toString();
+                const stripeCardExpDate = stripeCardExpMonth + "/" + stripeCardExpYear.charAt(2) + stripeCardExpYear.charAt(3);
                 const stripePaymentMethodID = paymentMethod.id;
+                const cardBGVariation = Math.floor(Math.random() + 1);
 
                 // Update payment method
-                await updatePaymentMethod(stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType);
+                await updatePaymentMethod(stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType, stripeCardExpDate, cardBGVariation);
                 break;
             }
             // Customer remove payment method
@@ -171,10 +195,14 @@ module.exports.handleWebhook = async (req, res) => {
                 const stripeCardFingerprint = paymentMethod.card.fingerprint;
                 const stripeCardLastFourDigit = paymentMethod.card.last4;
                 const stripeCardType = paymentMethod.card.brand;
+                const stripeCardExpMonth = paymentMethod.card.exp_month.toString();
+                const stripeCardExpYear = paymentMethod.card.exp_year.toString();
+                const stripeCardExpDate = stripeCardExpMonth + "/" + stripeCardExpYear.charAt(2) + stripeCardExpYear.charAt(3);
                 const stripePaymentMethodID = paymentMethod.id;
+                const cardBGVariation = Math.floor(Math.random() + 1);
 
                 // Update payment method
-                await updatePaymentMethod(stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType);
+                await updatePaymentMethod(stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType, stripeCardExpDate, cardBGVariation);
                 break;
             }
             // Payment intent success

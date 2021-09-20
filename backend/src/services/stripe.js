@@ -11,6 +11,12 @@ module.exports.createPaymentIntent = (totalPrice, stripeCustomerID) => stripe.pa
     receipt_email: "tkl48leon@gmail.com"
 });
 
+// Confirm payment intent
+module.exports.confirmPaymentIntent = (stripePaymentMethodID, stripePaymentIntentID) => stripe.paymentIntents.confirm(
+  stripePaymentIntentID,
+  {payment_method: stripePaymentMethodID}
+);
+
 // Create customer
 module.exports.createStripeCustomer = (email, name) => stripe.customers.create({
     email,

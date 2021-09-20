@@ -29,6 +29,7 @@ module.exports = router => {
     // With reference to https://stripe.com/docs/payments/integration-builder
     // & https://stripe.com/docs/api/payment_intents
     router.post("/api/v1/stripe/payment_intents", isLoggedIn, calculateProductsTotalPrice, stripeController.createPaymentIntent);
+    router.post("/api/v1/stripe/payment_intents/confirm", isLoggedIn, stripeController.confirmPaymentIntent);
     router.put("/api/v1/stripe/payment_intents", isLoggedIn, calculateProductsTotalPrice, stripeController.updatePaymentIntent);
     router.get("/api/v1/stripe/payment_methods/:stripeCustomerID", isLoggedIn, stripeController.findStripeCustomerPaymentMethods);
    

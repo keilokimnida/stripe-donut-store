@@ -1,0 +1,74 @@
+.l-Setup-payment-method {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 100000;
+
+    &--show {
+        display: block;
+    }
+
+    &--hidden {
+        display: none;
+    }
+
+    .c-Setup-payment-method {
+        filter: none;
+        position: fixed;
+        background: white;
+        width: 400px;
+        height: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 30px;
+        border-radius: 5px;
+
+        h1 {
+            font-size: $font-medium;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .l-Setup-payment-method__Card-element {
+            margin-top: 20px;
+
+            .c-Setup-payment-method__Card-element {
+                border: 1px solid black;
+                border-radius: 5px;
+                padding: 9px;
+            }
+        }
+
+        &__Btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+
+            button {
+                cursor: pointer;
+            }
+
+            button:first-of-type {
+                margin-top: 20px;
+                width: 100%;
+                cursor: pointer;
+                box-shadow: none;
+                background-color: $stripe-purple;
+                color: white;
+
+                &:hover {
+                    opacity: 0.9;
+                }
+
+                &:active {
+                    opacity: 0.7;
+                }
+            }
+        }
+    }
+}

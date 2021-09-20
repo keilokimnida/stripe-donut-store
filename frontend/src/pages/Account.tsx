@@ -15,7 +15,9 @@ import dayjs from 'dayjs';
 import MCSVG from "../assets/svg/MC.svg";
 import visaSVG from "../assets/svg/Visa_2021.svg";
 import amexSVG from "../assets/svg/Amex.svg";
-import { ReactSVG } from 'react-svg'
+import { ReactSVG } from 'react-svg';
+import SetupPaymentMethod from '../common/SetupPaymentMethod';
+import CreditCard from '../common/CreditCard';
 
 const Account: React.FC = () => {
 
@@ -49,6 +51,7 @@ const Account: React.FC = () => {
     const [editMode, setEditMode] = useState<boolean>(false);
     const [paymentHistory, setPaymentHistory] = useState<[]>([]);
     const [paymentMethods, setPaymentMethods] = useState<[]>([]);
+    const [showSetupPaymentMethod, setShowSetupPaymentMethod] = useState<boolean>(false);
 
     useEffect(() => {
         let componentMounted = true;
@@ -76,15 +79,15 @@ const Account: React.FC = () => {
                             orderID: order.order_id,
                             amount: "S$" + order.amount,
                             cardType: order.stripe_payment_method_type,
-                            cardLastFourDigit: "●●●● " + order.stripe_payment_method_last_four_digit,
+                            cardLastFourDigit: order.stripe_payment_method_last_four_digit,
                             createdAt: dayjs(new Date(order.created_at)).format("MMMM D, YYYY h:mm A"),
                         })));
                         setPaymentMethods(() => data.account.payment_accounts.map((paymentAccount: any, index: number) => ({
                             serialNo: index + 1,
                             paymentMethodID: paymentAccount.payment_methods_id,
                             cardType: paymentAccount.stripe_card_type,
-                            cardLastFourDigit: "●●●● " + paymentAccount.stripe_card_last_four_digit,
-                            createdAt: dayjs(new Date(paymentAccount.created_at)).format("MMMM D, YYYY h:mm A")
+                            cardLastFourDigit: paymentAccount.stripe_card_last_four_digit,
+                            createdAt: dayjs(new Date(paymentAccount.created_at)).format("MMMM D, YYYY h:mm A"),
                         })));
 
                     }
@@ -154,6 +157,9 @@ const Account: React.FC = () => {
         {
             dataField: 'cardLastFourDigit',
             text: 'Last 4 Digit',
+            formatter: (cell: any) => (
+                "●●●● " + cell
+            )
         },
         {
             dataField: 'createdAt',
@@ -197,16 +203,36 @@ const Account: React.FC = () => {
         {
             dataField: 'cardLastFourDigit',
             text: 'Last 4 Digit',
+            formatter: (cell: any) => (
+                "●●●● " + cell
+            )
         },
         {
             dataField: 'createdAt',
             text: 'Added on'
+        },
+        {
+            dataField: 'action_delete',
+            text: '',
+            isDummyField: true,
+            formatter: (cell: any, row: any) => {
+                return <p onClick={() => handleRemoveCard(row.paymentMethodID)}>Remove Card</p>
+            }
         }
     ];
 
+    const handleShowPaymentMethod = () => {
+        setShowSetupPaymentMethod((prevState) => !prevState);
+    };
+
+    const handleRemoveCard = (paymentMethodID: number) => {
+        // To do handle remove card here
+    };
+
     return (
         <>
-            <div className="l-Main">
+            <SetupPaymentMethod show={showSetupPaymentMethod} handleClose={handleShowPaymentMethod} />
+            <div className={showSetupPaymentMethod ? "l-Main l-Main--blur" : "l-Main"}>
                 <ToastContainer
                     position="top-center"
                     autoClose={toastTiming}
@@ -295,7 +321,7 @@ const Account: React.FC = () => {
                                                 <p>Add a payment method to save time during checkout!</p>
                                             </div>
                                             <div className="c-Heading__Btn">
-                                                <button type="button" className="c-Btn">Add</button>
+                                                <button type="button" className="c-Btn" onClick={handleShowPaymentMethod}>Add</button>
                                             </div>
                                         </div>
                                         <hr />
@@ -303,25 +329,38 @@ const Account: React.FC = () => {
                                             paymentMethods.length === 0 ?
                                                 <p>No Payment Methods Found!</p>
                                                 :
-                                                <BootstrapTable
-                                                    bordered={false}
-                                                    keyField="payment"
-                                                    data={paymentMethods}
-                                                    columns={paymentMethodsColumn}
-                                                />
+                                                <>
+                                                    {/* Credit card section */}
+                                                    <div className="c-Account__Credit-card">
+                                                        {
+                                                            paymentMethods.map((paymentMethod: any, index: number) => <CreditCard key={index} last4={paymentMethod.cardLastFourDigit} expDate="12/24" type={paymentMethod.cardType} />)
+                                                        }
+                                                    </div>
+                                                    <hr />
+                                                    {/* Payment method table */}
+
+                                                    <div className="c-Account__Payment-method-table">
+                                                        <BootstrapTable
+                                                            bordered={false}
+                                                            keyField="paymentMethodID"
+                                                            data={paymentMethods}
+                                                            columns={paymentMethodsColumn}
+                                                        />
+                                                    </div>
+                                                </>
                                         }
 
                                     </div>
                                     {/* Payment history */}
                                     <div className="c-Account__Payment-history">
                                         <div className="c-Account__Heading">
-                                          
+
                                             <div className="c-Heading__Text">
-                                            <h1>Payment History</h1>
-                                            <p>Payment history for membership and products. Receipt is sent to billing email.</p>
+                                                <h1>Payment History</h1>
+                                                <p>Payment history for membership and products. Receipt is sent to billing email.</p>
+                                            </div>
                                         </div>
-                                        </div>
-                                        
+
                                         <hr />
                                         <div className="c-Payment-history__Details">
                                             {
@@ -330,7 +369,7 @@ const Account: React.FC = () => {
                                                     :
                                                     <BootstrapTable
                                                         bordered={false}
-                                                        keyField="receiptID"
+                                                        keyField="orderID"
                                                         data={paymentHistory}
                                                         columns={paymentHistoryColumn}
                                                     />
