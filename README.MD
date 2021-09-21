@@ -1,6 +1,6 @@
 # Stripe Donut
 
-Pet project for Sep/Oct 2021 holiday! Simple store that sells premium donuts, and offers exclusive products to users who have subscribed for a membership.
+Pet project for Sep/Oct 2021 holiday! Simple store that sells premium donuts, and offers exclusive products to users who have subscribed for a membership. This project is still a work in progress!
 
 **Learning Objectives:**
 1. Integrate React & NodeJS application with Stripe
