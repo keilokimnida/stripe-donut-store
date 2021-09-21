@@ -21,6 +21,10 @@ import { PaymentIntentConfirmParams } from "@stripe/stripe-js";
 import { PageStatusEnum } from '../config/enums';
 import ContentLoader from "react-content-loader"
 import CheckoutSuccess from '../common/CheckoutSuccess';
+import * as BiIcons from 'react-icons/bi';
+import { IconContext } from 'react-icons';
+import SetupPaymentMethod from '../common/SetupPaymentMethod';
+import SelectPaymentMethod from '../common/SelectPaymentMethod';
 
 
 const Checkout: React.FC = () => {
@@ -47,6 +51,8 @@ const Checkout: React.FC = () => {
     const [pageStatus, setPageStatus] = useState<PageStatusEnum>(PageStatusEnum.LOADING);
     // const [saveCard, setSaveCard] = useState<boolean>(false);
     const [paymentMethods, setPaymentMethods] = useState<[]>([]);
+    const [showSetupPaymentMethod, setShowSetupPaymentMethod] = useState<boolean>(false);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number | null>(null);
 
     // Stripe
     const [paymentError, setPaymentError] = useState<string | null>(null);
@@ -55,6 +61,7 @@ const Checkout: React.FC = () => {
     const [paymentSuccess, setPaymentSuccess] = useState<boolean>(false);
     const [paymentIntentID, setPaymentIntentID] = useState<string | null>(null);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
+    const [choosePaymentMethod, setChoosePaymentMethod] = useState<string | null>(null);
     const stripe = useStripe();
     const elements = useElements();
 
@@ -150,37 +157,37 @@ const Checkout: React.FC = () => {
 
     }, [rerender]);
 
-    const cardStyle = {
-        hidePostalCode: true,
-        style: {
-            base: {
-                color: "#32325d",
-                fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-                fontSmoothing: "antialiased",
-                fontSize: "16px",
-                "::placeholder": {
-                    color: "#32325d"
-                }
-            },
-            invalid: {
-                color: "#fa755a",
-                iconColor: "#fa755a"
+    useEffect(() => {
+        let componentMounted = true;
+        if (componentMounted) {
+            if (selectedPaymentMethod !== null) {
+                setPaymentDisabled(() => false);
+            } else {
+                setPaymentDisabled(() => true);
             }
         }
-    };
+        return (() => {
+            componentMounted = false;
+        });
+    }, [selectedPaymentMethod]);
 
     // Handlers
-    const handleCardInputChange = async (event: any) => {
-        // Listen for changes in the CardElement
-        // and display any errors as the customer types their card details
-        if (event.complete) {
-            setPaymentDisabled(false);
-        } else {
-            setPaymentDisabled(true);
-        }
+    // const handleCardInputChange = async (event: any) => {
+    //     // Listen for changes in the CardElement
+    //     // and display any errors as the customer types their card details
+    //     if (event.complete) {
+    //         setPaymentDisabled(false);
+    //     } else {
+    //         setPaymentDisabled(true);
+    //     }
 
+    //     setPaymentError(event.error ? event.error.message : "");
+    // };
+
+    const handleSelectCard = async (event: any) => {
+        setPaymentDisabled(false);
         setPaymentError(event.error ? event.error.message : "");
-    };
+    }
 
     const handleFormSubmit = async (event: any) => {
         event.preventDefault();
@@ -247,9 +254,24 @@ const Checkout: React.FC = () => {
     //     setSaveCard((prevState) => !prevState);
     // };
 
+    const handleShowSetupPaymentMethod = () => {
+        setShowSetupPaymentMethod((prevState) => !prevState);
+        setSelectedPaymentMethod(() => null);
+    };
+
+    const handleSelectPaymentMethod = (index: number) => {
+        if (index === selectedPaymentMethod) {
+            setSelectedPaymentMethod(() => null);
+        } else {
+            setSelectedPaymentMethod(() => index);
+        }
+
+    };
+
     return (
         <>
-            <div className="l-Main">
+            <SetupPaymentMethod show={showSetupPaymentMethod} handleClose={handleShowSetupPaymentMethod} />
+            <div className={showSetupPaymentMethod ? "l-Main l-Main--blur" : "l-Main"}>
                 <ToastContainer
                     position="top-center"
                     autoClose={toastTiming}
@@ -306,6 +328,26 @@ const Checkout: React.FC = () => {
                                                 </div>
                                                 <div className="c-Left__Card-info">
                                                     <h2>Payment Mode</h2>
+                                                    {
+                                                        paymentMethods.length > 0 ?
+                                                            paymentMethods.map((paymentMethod: any, index) => (
+                                                                <div className="c-Card-info__Payment-methods">
+                                                                    <SelectPaymentMethod key={index} cardBrand={paymentMethod.cardType} last4={paymentMethod.cardLastFourDigit} expDate="12/24" stripePaymentMethodID="yessir" selectedPaymentMethod={selectedPaymentMethod} handleSelectPaymentMethod={handleSelectPaymentMethod} />
+                                                                </div>
+                                                            ))
+                                                            :
+                                                            <p>No payment methods found.</p>
+                                                    }
+
+                                                    <div className="c-Card-info__Add-card" onClick={handleShowSetupPaymentMethod}>
+                                                        <p>
+                                                            <IconContext.Provider value={{ color: "#172b4d", size: "21px" }}>
+                                                                <BiIcons.BiCreditCard className="c-Add-card__Icon" />
+                                                            </IconContext.Provider>
+                                                            Add Credit / Debit Card
+                                                        </p>
+                                                    </div>
+
                                                     {/* Show any error that happens when processing the payment */}
                                                     {paymentError && (
                                                         <div className="card-error" role="alert">

@@ -49,22 +49,6 @@ module.exports.createPaymentIntent = async (req, res) => {
     }
 };
 
-module.exports.confirmPaymentIntent = async (req, res) => {
-    try {
-        const { stripePaymentMethodID, stripePaymentIntentID } = req.body;
-
-        if (!stripePaymentMethodID) return res.status(400).json({
-            message: "Cannot find parameter \"paymentIntentID\""
-        });
-
-        const paymentIntent = await confirmPaymentIntent(stripePaymentMethodID, stripePaymentIntentID);
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send("Error in controller > stripe.js! " + error);
-    }
-};
-
 // Create stripe customer
 module.exports.createStripeCustomer = async (req, res) => {
     try {

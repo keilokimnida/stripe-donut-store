@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 
 interface Props {
@@ -7,6 +7,8 @@ interface Props {
 }
 
 const SetupPaymentMethod: React.FC<Props> = ({ show, handleClose }) => {
+
+    const [cardSetupError, setCardSetupError] = useState<string | null>(null);
 
     const stripe = useStripe();
     const elements = useElements();
@@ -40,7 +42,14 @@ const SetupPaymentMethod: React.FC<Props> = ({ show, handleClose }) => {
         // Clear stripe element before closing
         elements!.getElement(CardElement)!.clear();
         handleClose();
-    }
+    };
+
+    const handleCardInputChange = async (event: any) => {
+        // Listen for changes in the CardElement
+        // and display any errors as the customer types their card details
+
+        setCardSetupError(event.error ? event.error.message : "");
+    };
 
     return (
         <form className={showHideClassName} onSubmit={(event) => handleSubmit(event)}>
@@ -49,9 +58,15 @@ const SetupPaymentMethod: React.FC<Props> = ({ show, handleClose }) => {
                 <div className="l-Setup-payment-method__Card-element">
                     <div className="c-Setup-payment-method__Card-element">
                         {/* Card input is rendered here */}
-                        <CardElement options={CARD_ELEMENT_OPTIONS} />
+                        <CardElement options={CARD_ELEMENT_OPTIONS} onChange={handleCardInputChange} />
                     </div>
                 </div>
+                {/* Show any error that happens when setting up the payment method */}
+                {cardSetupError && (
+                    <div className="card-error" role="alert">
+                        {cardSetupError}
+                    </div>
+                )}
                 <div className="c-Setup-payment-method__Btn">
                     <button type="button" className="c-Btn" onClick={() => handleBtn()}>Save</button>
                     <button type="button" className="c-Btn c-Btn--link" onClick={() => handleBtn()}>Cancel</button>
