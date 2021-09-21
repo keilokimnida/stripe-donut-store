@@ -219,7 +219,7 @@ const ProductDetails: React.FC<Props> = ({ match }) => {
                                                 inCartAlready ?
                                                     <div className="c-Product-details__Btns ">
                                                         <div className="c-Btns__Added-to-cart">
-                                                            <button type="button" className="c-Btn c-Btn__View" onClick={() => history.push("/cart")}>View in Cart</button>
+                                                            <button type="button" className="c-Btn c-Btn__View" onClick={() => history.push("/products")}>Continue Shopping</button>
                                                             <button type="button" className="c-Btn c-Btn__Remove" onClick={() => handleRemoveFromCart()}>Remove from Cart</button>
                                                         </div>
                                                     </div>

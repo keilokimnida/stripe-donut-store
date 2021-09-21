@@ -1,5 +1,7 @@
 const { PaymentMethods } = require("../model_definitions/PaymentMethods");
 const { Accounts_PaymentMethods } = require("../model_definitions/Accounts_PaymentMethods");
+const { Accounts } = require("../model_definitions/Accounts");
+const { Op } = require("sequelize");
 
 module.exports.insertPaymentMethod = async (accountID, stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType, stripeCardExpDate, cardBGVariation) => {
 
@@ -31,21 +33,27 @@ module.exports.insertPaymentMethod = async (accountID, stripePaymentMethodID, st
 module.exports.findPaymentMethodsByAccountID = (accountID) => Accounts_PaymentMethods.findAll({
     where: {
         fk_account_id: accountID
-    }
+    },
+    order: [['accounts_payment_methods_id', 'ASC']]
 });
 
-module.exports.findPaymentMethodID = (stripePaymentMethodID) => PaymentMethods.findOne({
+module.exports.findPaymentMethod = (stripePaymentMethodID) => PaymentMethods.findOne({
     where: {
         stripe_payment_method_id: stripePaymentMethodID
     },
-    attributes: [payment_methods_id]
+    include: {
+        model: Accounts,
+        as: "payment_methods"
+    },
+    order: [['payment_methods_id', 'ASC']]
 });
 
-module.exports.findPaymentMethodByAccountIDAndPaymentMethodID = (paymentIntentID, accountID) => Accounts_PaymentMethods.findAll({
+module.exports.findPaymentMethodByAccountIDAndPaymentMethodID = (paymentMethodID, accountID) => Accounts_PaymentMethods.findOne({
     where: {
-        fk_payment_methods_id: paymentIntentID,
+        fk_payment_methods_id: paymentMethodID,
         fk_account_id: accountID
-    }
+    },
+    order: [['accounts_payment_methods_id', 'ASC']]
 });
 
 module.exports.updatePaymentMethod = (stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType, stripeCardExpDate, cardBGVariation) => PaymentMethods.update({
@@ -61,3 +69,19 @@ module.exports.updatePaymentMethod = (stripePaymentMethodID, stripeCardFingerpri
 });
 
 module.exports.removePaymentMethod = (paymentMethod) => paymentMethod.destroy();
+
+module.exports.findDuplicatePaymentMethod = (accountID, stripeFingerprint, stripePaymentMethodID) => Accounts.findOne({
+    where: {
+        account_id: accountID
+    },
+    include: {
+        model: PaymentMethods,
+        as: "payment_accounts",
+        where: {
+            stripe_payment_method_fingerprint: stripeFingerprint,
+            stripe_payment_method_id: {
+                [Op.ne]: stripePaymentMethodID
+            }
+        }
+    }
+});

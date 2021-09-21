@@ -1,9 +1,8 @@
 .c-Product-details {
     width: 75%;
-    margin: auto;
     display: flex;
     justify-content: space-evenly;
-    margin-top: 50px;
+    margin: 50px auto;
 
     &__Img {
         flex: 1.5;
@@ -70,11 +69,11 @@
                     box-shadow: none;
                     background-color: $stripe-purple;
                     color: white;
-  
+
                     &:hover {
                         opacity: 0.9;
                     }
-        
+
                     &:active {
                         opacity: 0.7;
                     }

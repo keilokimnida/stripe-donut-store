@@ -1,8 +1,8 @@
-const { createPaymentIntent, createStripeCustomer, findStripeCustomerPaymentMethods, updatePaymentIntent, findStripeCustomerPaymentMethod } = require('../services/stripe');
+const { createPaymentIntent, createStripeCustomer, findStripeCustomerPaymentMethods, updatePaymentIntent, findStripeCustomerPaymentMethod, createSetupIntent, findPaymentMethodByStripePaymentMethodID, detachPaymentMethod } = require('../services/stripe');
 const { findAccountByID, updateAccountByID, findAccountByStripeCustID } = require('../models/account');
 const { deleteAllCartItemByAccountID } = require('../models/cart');
 const { insertOrder } = require('../models/orders');
-const { insertPaymentMethod, updatePaymentMethod, findPaymentMethodID, removePaymentMethod, findPaymentMethodByAccountIDAndPaymentMethodID } = require('../models/paymentMethods');
+const { insertPaymentMethod, updatePaymentMethod, findPaymentMethod, removePaymentMethod, findDuplicatePaymentMethod } = require('../models/paymentMethods');
 
 // Create payment intent
 module.exports.createPaymentIntent = async (req, res) => {
@@ -18,7 +18,6 @@ module.exports.createPaymentIntent = async (req, res) => {
         const totalPrice = res.locals.cartInfo;
         const account = await findAccountByID(accountID);
 
-        // Check if user already has a payment intent
         if (!account) return res.status(400).json({
             message: "Cannot find \"account\""
         });
@@ -26,6 +25,7 @@ module.exports.createPaymentIntent = async (req, res) => {
         let clientSecret;
         let paymentIntentID;
 
+        // Check if user already has a payment intent
         if (account.stripe_payment_intent_id === null) {
             const paymentIntent = await createPaymentIntent(totalPrice, account.stripe_customer_id);
             clientSecret = paymentIntent.client_secret;
@@ -99,6 +99,77 @@ module.exports.updatePaymentIntent = async (req, res) => {
     }
 };
 
+// Create setup intent
+module.exports.createSetupIntent = async (req, res) => {
+    try {
+        const { decoded } = res.locals.auth;
+        const accountID = parseInt(decoded.account_id);
+
+        if (isNaN(accountID)) return res.status(400).json({
+            message: "Invalid parameter \"accountID\""
+        });
+
+        const account = await findAccountByID(accountID);
+
+        if (!account) return res.status(400).json({
+            message: "Cannot find \"account\""
+        });
+
+        const setupIntent = await createSetupIntent(account.stripe_customer_id);
+        const clientSecret = setupIntent.client_secret;
+        const setupIntentID = setupIntent.id;
+
+        return res.status(200).send({ clientSecret, setupIntentID });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Error in controller > stripe.js! " + error);
+    }
+};
+
+// Verify new stripePaymentMethod fingerprint doesn't already exist
+module.exports.verifyPaymentMethodSetup = async (req, res) => {
+    try {
+        const { decoded } = res.locals.auth;
+        const accountID = parseInt(decoded.account_id);
+        const { stripePaymentMethodID } = req.body;
+
+        if (isNaN(accountID)) return res.status(400).json({
+            message: "Invalid parameter \"accountID\""
+        });
+
+        if (!stripePaymentMethodID) return res.status(400).json({
+            message: "Invalid parameter \"stripePaymentMethodID\""
+        });
+
+        const account = await findAccountByID(accountID);
+
+        if (!account) return res.status(400).json({
+            message: "Cannot find \"account\""
+        });
+
+        const paymentMethod = await findPaymentMethodByStripePaymentMethodID(stripePaymentMethodID);
+
+        if (!paymentMethod) return res.status(400).json({
+            message: "Cannot find \"paymentMethod\""
+        });
+
+        const stripeFingerprint = paymentMethod.card.fingerprint;
+
+        const duplicatedPaymentMethod = await findDuplicatePaymentMethod(accountID, stripeFingerprint, stripePaymentMethodID);
+
+        let duplicate = false;
+        if (duplicatedPaymentMethod) {
+            duplicate = true;
+            // dont need to detach locally and in stripe because it's handled in webhooks
+        }
+
+        return res.status(200).send({ duplicate });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Error in controller > stripe.js! " + error);
+    }
+}
+
 // Handle webhook
 module.exports.handleWebhook = async (req, res) => {
     try {
@@ -113,17 +184,27 @@ module.exports.handleWebhook = async (req, res) => {
 
                 const stripePaymentMethodID = paymentMethod.id;
                 const stripeCardFingerprint = paymentMethod.card.fingerprint;
+                const stripeCustomerID = paymentMethod.customer;
+                // Find account id based on stripe customer id
+                const account = await findAccountByStripeCustID(stripeCustomerID);
+                const accountID = account.account_id;
+
+                const duplicatedPaymentMethod = await findDuplicatePaymentMethod(accountID, stripeCardFingerprint, stripePaymentMethodID);
+
+                let duplicate = false;
+                if (duplicatedPaymentMethod) {
+                    await detachPaymentMethod(stripePaymentMethodID);
+                    duplicate = true;
+                    // dont need to detach locally because it's handled in webhooks
+                }
+
                 const stripeCardLastFourDigit = paymentMethod.card.last4;
                 const stripeCardType = paymentMethod.card.brand;
                 const stripeCardExpMonth = paymentMethod.card.exp_month.toString();
                 const stripeCardExpYear = paymentMethod.card.exp_year.toString();
                 const stripeCardExpDate = stripeCardExpMonth + "/" + stripeCardExpYear.charAt(2) + stripeCardExpYear.charAt(3);
-                const stripeCustomerID = paymentMethod.customer;
-                const cardBGVariation = Math.floor(Math.random() + 1);
 
-                // Find account id based on stripe customer id
-                const account = await findAccountByStripeCustID(stripeCustomerID);
-                const accountID = account.account_id;
+                const cardBGVariation = Math.floor((Math.random()) * 10) + 1;
 
                 // Insert payment method
                 await insertPaymentMethod(accountID, stripePaymentMethodID, stripeCardFingerprint, stripeCardLastFourDigit, stripeCardType, stripeCardExpDate, cardBGVariation);
@@ -154,20 +235,15 @@ module.exports.handleWebhook = async (req, res) => {
                 console.log(paymentMethod);
                 // find payment intent id (local)
                 const stripePaymentMethodID = paymentMethod.id;
-                const stripeCustomerID = paymentMethod.customer;
-
-                // Find account id based on stripe customer id
-                const account = await findAccountByStripeCustID(stripeCustomerID);
-                const accountID = account.account_id;
 
                 // Find local payment method id
-                const paymentMethodID = await findPaymentMethodID(stripePaymentMethodID);
+                const foundPaymentMethod = await findPaymentMethod(stripePaymentMethodID);
 
-                // Find payment method method based on account id and local payment method id
-                const foundPaymentMethod = await findPaymentMethodByAccountIDAndPaymentMethodID(paymentMethodID, accountID);
-
-                // remove payment method
-                await removePaymentMethod(foundPaymentMethod);
+                // Only remove payment method if payment method still exists in our mysql database as it might already have been deleted or doesn't even exist
+                if (foundPaymentMethod) {
+                    // remove payment method
+                    await removePaymentMethod(foundPaymentMethod);
+                }
 
                 break;
             }
@@ -200,24 +276,20 @@ module.exports.handleWebhook = async (req, res) => {
 
                 const account = await findAccountByStripeCustID(stripeCustomerID);
                 const accountID = account.account_id;
-                console.log(1);
                 // Remove customer payment intent
                 await updateAccountByID(accountID, {
                     stripe_payment_intent_client_secret: null,
                     stripe_payment_intent_id: null
                 });
-                console.log(2);
                 // Remove customer cart
                 await deleteAllCartItemByAccountID(accountID);
-                console.log(3);
                 // Find payment method details
-                const paymentMethod = await findStripeCustomerPaymentMethod(stripePaymentMethodID); 
+                const paymentMethod = await findStripeCustomerPaymentMethod(stripePaymentMethodID);
                 const paymentType = paymentMethod.card.brand;
                 const cardLastFourDigit = paymentMethod.card.last4;
-         
+
                 // Add to order table
                 await insertOrder(accountID, paymentType, cardLastFourDigit, amount);
-                console.log(4);
                 break;
             }
             // Unexpected event type

@@ -52,7 +52,7 @@ const Checkout: React.FC = () => {
     // const [saveCard, setSaveCard] = useState<boolean>(false);
     const [paymentMethods, setPaymentMethods] = useState<[]>([]);
     const [showSetupPaymentMethod, setShowSetupPaymentMethod] = useState<boolean>(false);
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number | null>(null);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
 
     // Stripe
     const [paymentError, setPaymentError] = useState<string | null>(null);
@@ -61,7 +61,6 @@ const Checkout: React.FC = () => {
     const [paymentSuccess, setPaymentSuccess] = useState<boolean>(false);
     const [paymentIntentID, setPaymentIntentID] = useState<string | null>(null);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
-    const [choosePaymentMethod, setChoosePaymentMethod] = useState<string | null>(null);
     const stripe = useStripe();
     const elements = useElements();
 
@@ -106,13 +105,17 @@ const Checkout: React.FC = () => {
                         });
 
                         // Check if user has any payment types stored already
-
-                        // If there's payment methods set up already
                         if (cartData.account.payment_accounts.length > 0) {
-                            console.log("there are already existing payment methods!");
+
                             console.log(cartData.account.payment_accounts);
+                            setPaymentMethods(() => cartData.account.payment_accounts.map((paymentMethod: LooseObject) => ({
+                                cardBrand: paymentMethod.stripe_card_type,
+                                last4: paymentMethod.stripe_card_last_four_digit,
+                                expDate: paymentMethod.stripe_card_exp_date,
+                                stripePaymentMethodID: paymentMethod.stripe_payment_method_id
+                            })));
                         } else {
-                            // This else block can be removed
+                            setPaymentMethods(() => []);
                             console.log("there are no existing payment methods!");
                         }
 
@@ -229,20 +232,22 @@ const Checkout: React.FC = () => {
             //     setup_future_usage
             // });
 
-            const payload: any = await stripe!.confirmCardPayment(clientSecret!, {
-                payment_method: {
-                    card: elements!.getElement(CardElement)!
+            if (selectedPaymentMethod) {
+                const payload: any = await stripe!.confirmCardPayment(clientSecret!, {
+                    payment_method: selectedPaymentMethod
+                });
+    
+                if (payload.error) {
+                    setPaymentError(() => `Payment failed! ${payload.error.message}`);
+                    setPaymentProcessing(() => false);
+                } else {
+                    setPaymentError(() => null);
+                    setPaymentProcessing(false);
+                    setPaymentSuccess(() => true);
                 }
-            });
-
-            if (payload.error) {
-                setPaymentError(() => `Payment failed! ${payload.error.message}`);
-                setPaymentProcessing(() => false);
-            } else {
-                setPaymentError(() => null);
-                setPaymentProcessing(false);
-                setPaymentSuccess(() => true);
             }
+
+
         }
     };
 
@@ -259,11 +264,11 @@ const Checkout: React.FC = () => {
         setSelectedPaymentMethod(() => null);
     };
 
-    const handleSelectPaymentMethod = (index: number) => {
-        if (index === selectedPaymentMethod) {
+    const handleSelectPaymentMethod = (stripePaymentMethodID: string) => {
+        if (stripePaymentMethodID === selectedPaymentMethod) {
             setSelectedPaymentMethod(() => null);
         } else {
-            setSelectedPaymentMethod(() => index);
+            setSelectedPaymentMethod(() => stripePaymentMethodID);
         }
 
     };
@@ -331,8 +336,8 @@ const Checkout: React.FC = () => {
                                                     {
                                                         paymentMethods.length > 0 ?
                                                             paymentMethods.map((paymentMethod: any, index) => (
-                                                                <div className="c-Card-info__Payment-methods">
-                                                                    <SelectPaymentMethod key={index} cardBrand={paymentMethod.cardType} last4={paymentMethod.cardLastFourDigit} expDate="12/24" stripePaymentMethodID="yessir" selectedPaymentMethod={selectedPaymentMethod} handleSelectPaymentMethod={handleSelectPaymentMethod} />
+                                                                <div className="c-Card-info__Payment-methods" key={index}>
+                                                                    <SelectPaymentMethod index={index} cardBrand={paymentMethod.cardBrand} last4={paymentMethod.last4} expDate={paymentMethod.expDate} stripePaymentMethodID={paymentMethod.stripePaymentMethodID} selectedPaymentMethod={selectedPaymentMethod} handleSelectPaymentMethod={handleSelectPaymentMethod} />
                                                                 </div>
                                                             ))
                                                             :

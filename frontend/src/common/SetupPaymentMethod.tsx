@@ -1,14 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { toast } from 'react-toastify';
+import { getToken } from '../utilities/localStorageUtils';
+import axios from 'axios';
+import jwt_decode from "jwt-decode";
+import config from '../config/config';
 
 interface Props {
     show: boolean,
     handleClose: Function
 }
 
+interface LooseObject {
+    [key: string]: any
+}
+
 const SetupPaymentMethod: React.FC<Props> = ({ show, handleClose }) => {
 
     const [cardSetupError, setCardSetupError] = useState<string | null>(null);
+    const [setupIntentID, setSetupIntentID] = useState<string | null>(null);
+    const [clientSecret, setClientSecret] = useState<string | null>(null);
+    const token: string | null = getToken();
+    let accountID: string;
+    if (token) {
+        const decodedToken: LooseObject = jwt_decode(token!);
+        accountID = decodedToken.account_id;
+    }
+
+
+    useEffect(() => {
+        let componentMounted = true;
+
+        (async () => {
+            try {
+                if (componentMounted) {
+                    // Retrieve client secret here
+                    const setupIntent: LooseObject | null = await axios.post(`${config.baseUrl}/stripe/setup_intents`, {}, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    setClientSecret(() => setupIntent!.data.clientSecret);
+                    setSetupIntentID(() => setupIntent!.data.paymentIntentID);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        })()
+
+        return (() => {
+            componentMounted = false;
+        });
+    }, [show]);
 
     const stripe = useStripe();
     const elements = useElements();
@@ -34,8 +77,55 @@ const SetupPaymentMethod: React.FC<Props> = ({ show, handleClose }) => {
         },
     };
 
-    const handleSubmit = (event: any) => {
+    const handleSubmit = async (event: any) => {
         event.preventDefault();
+
+        if (!stripe || !elements) {
+            // Stripe.js has not yet loaded.
+            // Make sure to disable form submission until Stripe.js has loaded.
+            return;
+        }
+
+        const result = await stripe.confirmCardSetup(clientSecret!, {
+            payment_method: {
+                card: elements.getElement(CardElement)!
+            },
+        });
+
+        if (result.error) {
+            setCardSetupError(() => result.error.message as string | null);
+            // Display result.error.message in your UI.
+        } else {
+            // The setup has succeeded. Display a success message and send
+            // result.setupIntent.payment_method to your server to save the
+            // card to a Customer
+
+            // Obtain payment method id
+            const stripePaymentMethodID = result.setupIntent.payment_method;
+
+            // Verify stripePaymentMethod fingerprint doesn't already exist
+            try {
+                const verifyPaymentMethodDuplicate = await axios.post(`${config.baseUrl}/stripe/verify_payment_method_setup`, {
+                    stripePaymentMethodID
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+    
+                if (verifyPaymentMethodDuplicate.data.duplicate) {
+                    setCardSetupError(() => "Error! Card already exists!");
+                } else {
+                    toast.success('Successfully added payment method!');
+                    elements!.getElement(CardElement)!.clear();
+                    handleClose();
+                }
+            } catch (error) {
+                console.log(error);
+                setCardSetupError(() => "Error! Please try again later!");
+            }
+
+        }
     };
 
     const handleBtn = () => {
@@ -68,7 +158,7 @@ const SetupPaymentMethod: React.FC<Props> = ({ show, handleClose }) => {
                     </div>
                 )}
                 <div className="c-Setup-payment-method__Btn">
-                    <button type="button" className="c-Btn" onClick={() => handleBtn()}>Save</button>
+                    <button type="button" className="c-Btn" onClick={(event) => handleSubmit(event)}>Save</button>
                     <button type="button" className="c-Btn c-Btn--link" onClick={() => handleBtn()}>Cancel</button>
                 </div>
             </div>

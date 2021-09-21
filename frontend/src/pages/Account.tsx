@@ -87,6 +87,8 @@ const Account: React.FC = () => {
                             paymentMethodID: paymentAccount.payment_methods_id,
                             cardType: paymentAccount.stripe_card_type,
                             cardLastFourDigit: paymentAccount.stripe_card_last_four_digit,
+                            expDate: paymentAccount.stripe_card_exp_date,
+                            bgVar: paymentAccount.card_bg_variation,
                             createdAt: dayjs(new Date(paymentAccount.created_at)).format("MMMM D, YYYY h:mm A"),
                         })));
 
@@ -333,7 +335,13 @@ const Account: React.FC = () => {
                                                     {/* Credit card section */}
                                                     <div className="c-Account__Credit-card">
                                                         {
-                                                            paymentMethods.map((paymentMethod: any, index: number) => <CreditCard key={index} last4={paymentMethod.cardLastFourDigit} expDate="12/24" type={paymentMethod.cardType} />)
+                                                            paymentMethods.map((paymentMethod: any, index: number) => <CreditCard 
+                                                                key={index} 
+                                                                last4={paymentMethod.cardLastFourDigit} 
+                                                                expDate={paymentMethod.expDate} 
+                                                                type={paymentMethod.cardType}
+                                                                bgVar={paymentMethod.bgVar}
+                                                            />)
                                                         }
                                                     </div>
                                                     <hr />

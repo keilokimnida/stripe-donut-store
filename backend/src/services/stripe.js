@@ -5,16 +5,16 @@ const stripe = require("stripe")(config.stripe.test.secretKey);
 
 // Create payment intent
 module.exports.createPaymentIntent = (totalPrice, stripeCustomerID) => stripe.paymentIntents.create({
-    amount: totalPrice,
-    currency: "sgd",
-    customer: stripeCustomerID || null,
-    receipt_email: "tkl48leon@gmail.com"
+  amount: totalPrice,
+  currency: "sgd",
+  customer: stripeCustomerID || null,
+  receipt_email: "tkl48leon@gmail.com"
 });
 
 // Create customer
 module.exports.createStripeCustomer = (email, name) => stripe.customers.create({
-    email,
-    name
+  email,
+  name
 });
 
 // Get payment methods by ID
@@ -32,9 +32,24 @@ module.exports.findStripeCustomerPaymentMethod = (stripePaymentMethodID) => stri
 // Update payment intent
 module.exports.updatePaymentIntent = (paymentIntentID, totalPrice) => stripe.paymentIntents.update(
   paymentIntentID, {
-    amount: totalPrice,
-    currency: "sgd"
+  amount: totalPrice,
+  currency: "sgd"
 });
+
+// Create setup intent
+module.exports.createSetupIntent = (stripeCustomerID) => stripe.setupIntents.create({
+  customer: stripeCustomerID,
+});
+
+// find payment method by payment method id
+module.exports.findPaymentMethodByStripePaymentMethodID = (stripePaymentMethodID) => stripe.paymentMethods.retrieve(
+  stripePaymentMethodID
+);
 
 // Cancel payment intent
 module.exports.cancelPaymentIntent = (paymentIntentID) => stripe.paymentIntents.cancel(paymentIntentID);
+
+// Detach payment method
+module.exports.detachPaymentMethod = (stripePaymentMethodID) => stripe.paymentMethods.detach(
+  stripePaymentMethodID
+);

@@ -9,12 +9,13 @@ import amexWhite from "../assets/images/amex-white.png";
 import { ReactSVG } from 'react-svg';
 
 interface Props {
-    last4: string
-    expDate: string
-    type: string
+    last4: string;
+    expDate: string;
+    type: string;
+    bgVar: number;
 }
 
-const CreditCard: React.FC<Props> = ({ last4, expDate, type }) => {
+const CreditCard: React.FC<Props> = ({ last4, expDate, type, bgVar }) => {
 
     const renderLogo = () => {
         if (type === "visa") {
@@ -41,7 +42,7 @@ const CreditCard: React.FC<Props> = ({ last4, expDate, type }) => {
     }
 
     return (
-        <div className="c-Credit-card c-Credit-card--bg-var-8" onMouseEnter={() => handleCreditCardHover()} onMouseLeave={() => handleCreditCardHover()}>
+        <div className={`c-Credit-card c-Credit-card--bg-var-${bgVar}`} onMouseEnter={() => handleCreditCardHover()} onMouseLeave={() => handleCreditCardHover()}>
             <div className="c-Credit-card__Logo">
                 {renderLogo()}
             </div>

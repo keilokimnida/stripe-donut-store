@@ -9,12 +9,12 @@ interface Props {
     last4: string;
     expDate: string;
     stripePaymentMethodID: string;
-    selectedPaymentMethod: number | null;
-    key: number;
+    selectedPaymentMethod: string | null;
+    index: number;
     handleSelectPaymentMethod: Function;
 }
 
-const SelectPaymentMethod: React.FC<Props> = ({ cardBrand, last4, expDate, stripePaymentMethodID, selectedPaymentMethod, key, handleSelectPaymentMethod }) => {
+const SelectPaymentMethod: React.FC<Props> = ({ cardBrand, last4, expDate, stripePaymentMethodID, selectedPaymentMethod, index, handleSelectPaymentMethod }) => {
     const renderPaymentMethod = () => {
         if (cardBrand === "visa") {
             return <ReactSVG
@@ -36,11 +36,11 @@ const SelectPaymentMethod: React.FC<Props> = ({ cardBrand, last4, expDate, strip
         }
     };
 
-    const selectedMainClassName = selectedPaymentMethod === key ? "c-Select-payment-method c-Select-payment-method--selected" : "c-Select-payment-method";
-    const selectedBannerClassName = selectedPaymentMethod === key ? "c-Select-payment-method__Banner c-Select-payment-method__Banner--selected" : "c-Select-payment-method__Banner";
+    const selectedMainClassName = selectedPaymentMethod === stripePaymentMethodID ? "c-Select-payment-method c-Select-payment-method--selected" : "c-Select-payment-method";
+    const selectedBannerClassName = selectedPaymentMethod === stripePaymentMethodID ? "c-Select-payment-method__Banner c-Select-payment-method__Banner--selected" : "c-Select-payment-method__Banner";
 
     return (
-        <div className={selectedMainClassName} onClick={() => handleSelectPaymentMethod(key)}>
+        <div className={selectedMainClassName} onClick={() => handleSelectPaymentMethod(stripePaymentMethodID)}>
             <span className = {selectedBannerClassName}>Selected</span>
             <div className="c-Select-payment-method__Left">
                 <div className="c-Select-payment-method__SVG c-SVG">
