@@ -67,92 +67,94 @@ const Checkout: React.FC = () => {
     useEffect(() => {
         let componentMounted = true;
 
-        (async () => {
-            try {
+        if (!paymentSuccess) {
+            (async () => {
+                try {
 
-                // Get cart data based on account ID
-                const cartResponse = await axios.get(`${config.baseUrl}/cart`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                    // Get cart data based on account ID
+                    const cartResponse = await axios.get(`${config.baseUrl}/cart`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
 
-                const cartData = cartResponse.data;
-                if (componentMounted) {
-                    if (cartData.cart.length !== 0) {
-                        let subTotal = 0, grandTotal = 0;
-                        // set cart array here
-                        setCartArr(() => {
-                            return cartData.cart.map((cartDataObj: LooseObject, mapIndex: number) => {
-                                subTotal += cartDataObj.quantity * parseFloat(cartDataObj.product.product_price);
+                    const cartData = cartResponse.data;
+                    if (componentMounted) {
+                        if (cartData.cart.length !== 0) {
+                            let subTotal = 0, grandTotal = 0;
+                            // set cart array here
+                            setCartArr(() => {
+                                return cartData.cart.map((cartDataObj: LooseObject, mapIndex: number) => {
+                                    subTotal += cartDataObj.quantity * parseFloat(cartDataObj.product.product_price);
+                                    return {
+                                        quantity: cartDataObj.quantity,
+                                        name: cartDataObj.product.product_name,
+                                        unitPrice: parseFloat(cartDataObj.product.product_price),
+                                        totalPrice: (() => {
+                                            return cartDataObj.quantity * parseFloat(cartDataObj.product.product_price);
+                                        })(),
+                                        productID: cartDataObj.product.product_id
+                                    }
+                                });
+                            });
+                            setOrderSummary(() => {
+                                grandTotal = subTotal;
                                 return {
-                                    quantity: cartDataObj.quantity,
-                                    name: cartDataObj.product.product_name,
-                                    unitPrice: parseFloat(cartDataObj.product.product_price),
-                                    totalPrice: (() => {
-                                        return cartDataObj.quantity * parseFloat(cartDataObj.product.product_price);
-                                    })(),
-                                    productID: cartDataObj.product.product_id
+                                    grandTotal,
+                                    subTotal
                                 }
                             });
-                        });
-                        setOrderSummary(() => {
-                            grandTotal = subTotal;
-                            return {
-                                grandTotal,
-                                subTotal
+
+                            // Check if user has any payment types stored already
+                            if (cartData.account.payment_accounts.length > 0) {
+
+                                console.log(cartData.account.payment_accounts);
+                                setPaymentMethods(() => cartData.account.payment_accounts.map((paymentMethod: LooseObject) => ({
+                                    cardBrand: paymentMethod.stripe_card_type,
+                                    last4: paymentMethod.stripe_card_last_four_digit,
+                                    expDate: paymentMethod.stripe_card_exp_date,
+                                    stripePaymentMethodID: paymentMethod.stripe_payment_method_id
+                                })));
+                            } else {
+                                setPaymentMethods(() => []);
+                                console.log("there are no existing payment methods!");
                             }
-                        });
 
-                        // Check if user has any payment types stored already
-                        if (cartData.account.payment_accounts.length > 0) {
+                            // If there are no payment intent
+                            if (cartData.account.stripe_payment_intent_id === null) {
 
-                            console.log(cartData.account.payment_accounts);
-                            setPaymentMethods(() => cartData.account.payment_accounts.map((paymentMethod: LooseObject) => ({
-                                cardBrand: paymentMethod.stripe_card_type,
-                                last4: paymentMethod.stripe_card_last_four_digit,
-                                expDate: paymentMethod.stripe_card_exp_date,
-                                stripePaymentMethodID: paymentMethod.stripe_payment_method_id
-                            })));
+                                // Retrieve client secret here
+                                // Set payment intent initial amount
+                                const paymentIntent: LooseObject | null = await axios.post(`${config.baseUrl}/stripe/payment_intents`, {}, {
+                                    headers: {
+                                        'Authorization': `Bearer ${token}`
+                                    }
+                                });
+                                setClientSecret(() => paymentIntent!.data.clientSecret);
+                                setPaymentIntentID(() => paymentIntent!.data.paymentIntentID);
+                            } else {
+                                setClientSecret(() => (cartData.account.stripe_payment_intent_client_secret));
+                                setPaymentIntentID(() => cartData.account.stripe_payment_intent_id);
+                            }
+
                         } else {
-                            setPaymentMethods(() => []);
-                            console.log("there are no existing payment methods!");
+                            setCartArr(() => []);
                         }
 
-                        // If there are no payment intent
-                        if (cartData.account.stripe_payment_intent_id === null) {
-
-                            // Retrieve client secret here
-                            // Set payment intent initial amount
-                            const paymentIntent: LooseObject | null = await axios.post(`${config.baseUrl}/stripe/payment_intents`, {}, {
-                                headers: {
-                                    'Authorization': `Bearer ${token}`
-                                }
-                            });
-                            setClientSecret(() => paymentIntent!.data.clientSecret);
-                            setPaymentIntentID(() => paymentIntent!.data.paymentIntentID);
-                        } else {
-                            setClientSecret(() => (cartData.account.stripe_payment_intent_client_secret));
-                            setPaymentIntentID(() => cartData.account.stripe_payment_intent_id);
-                        }
-
-                    } else {
-                        setCartArr(() => []);
+                        setTimeout(() => {
+                            setPageStatus(() => PageStatusEnum.ACTIVE) // set page status to active
+                        }, 300);
                     }
-
-                    setTimeout(() => {
-                        setPageStatus(() => PageStatusEnum.ACTIVE) // set page status to active
-                    }, 300);
+                } catch (error) {
+                    console.log(error);
+                    if (componentMounted) {
+                        setTimeout(() => {
+                            setPageStatus(() => PageStatusEnum.ERROR) // set page status to error
+                        }, 300);
+                    }
                 }
-            } catch (error) {
-                console.log(error);
-                if (componentMounted) {
-                    setTimeout(() => {
-                        setPageStatus(() => PageStatusEnum.ERROR) // set page status to error
-                    }, 300);
-                }
-            }
-        })();
+            })();
+        }
 
         return (() => {
             componentMounted = false;
@@ -197,7 +199,7 @@ const Checkout: React.FC = () => {
         setPaymentProcessing(() => true);
 
         let paymentIntentUpdateSuccess = false;
-        console.log(paymentIntentID);
+
         // Do final update for price before confirming payment
         try {
             await axios.put(`${config.baseUrl}/stripe/payment_intents`, {
@@ -217,7 +219,7 @@ const Checkout: React.FC = () => {
 
         // Only confirm payment if price update is successful
         if (paymentIntentUpdateSuccess) {
-            console.log(paymentIntentID);
+
             // let setup_future_usage: PaymentIntentConfirmParams.SetupFutureUsage | null | undefined = null;
 
             // if (saveCard) {
@@ -236,7 +238,7 @@ const Checkout: React.FC = () => {
                 const payload: any = await stripe!.confirmCardPayment(clientSecret!, {
                     payment_method: selectedPaymentMethod
                 });
-    
+
                 if (payload.error) {
                     setPaymentError(() => `Payment failed! ${payload.error.message}`);
                     setPaymentProcessing(() => false);
@@ -244,6 +246,7 @@ const Checkout: React.FC = () => {
                     setPaymentError(() => null);
                     setPaymentProcessing(false);
                     setPaymentSuccess(() => true);
+                    setRerender((prevState) => !prevState);
                 }
             }
 
@@ -275,7 +278,7 @@ const Checkout: React.FC = () => {
 
     return (
         <>
-            <SetupPaymentMethod show={showSetupPaymentMethod} handleClose={handleShowSetupPaymentMethod} />
+            <SetupPaymentMethod show={showSetupPaymentMethod} handleClose={handleShowSetupPaymentMethod} setRerender={setRerender} />
             <div className={showSetupPaymentMethod ? "l-Main l-Main--blur" : "l-Main"}>
                 <ToastContainer
                     position="top-center"
@@ -337,20 +340,22 @@ const Checkout: React.FC = () => {
                                                         paymentMethods.length > 0 ?
                                                             paymentMethods.map((paymentMethod: any, index) => (
                                                                 <div className="c-Card-info__Payment-methods" key={index}>
-                                                                    <SelectPaymentMethod index={index} cardBrand={paymentMethod.cardBrand} last4={paymentMethod.last4} expDate={paymentMethod.expDate} stripePaymentMethodID={paymentMethod.stripePaymentMethodID} selectedPaymentMethod={selectedPaymentMethod} handleSelectPaymentMethod={handleSelectPaymentMethod} />
+                                                                    <SelectPaymentMethod index={index} cardBrand={paymentMethod.cardBrand} last4={paymentMethod.last4} expDate={paymentMethod.expDate} stripePaymentMethodID={paymentMethod.stripePaymentMethodID} selectedPaymentMethod={selectedPaymentMethod} handleSelectPaymentMethod={handleSelectPaymentMethod} disabled={paymentProcessing} />
                                                                 </div>
                                                             ))
                                                             :
                                                             <p>No payment methods found.</p>
                                                     }
 
-                                                    <div className="c-Card-info__Add-card" onClick={handleShowSetupPaymentMethod}>
-                                                        <p>
-                                                            <IconContext.Provider value={{ color: "#172b4d", size: "21px" }}>
-                                                                <BiIcons.BiCreditCard className="c-Add-card__Icon" />
-                                                            </IconContext.Provider>
-                                                            Add Credit / Debit Card
-                                                        </p>
+                                                    <div className={paymentProcessing ? "l-Card-info__Add-card l-Card-info__Add-card--disabled" : "l-Card-info__Add-card"}>
+                                                        <div className={paymentProcessing ? "c-Card-info__Add-card c-Card-info__Add-card--disabled" : "c-Card-info__Add-card"} onClick={handleShowSetupPaymentMethod}>
+                                                            <p>
+                                                                <IconContext.Provider value={{ color: "#172b4d", size: "21px" }}>
+                                                                    <BiIcons.BiCreditCard className="c-Add-card__Icon" />
+                                                                </IconContext.Provider>
+                                                                Add Credit / Debit Card
+                                                            </p>
+                                                        </div>
                                                     </div>
 
                                                     {/* Show any error that happens when processing the payment */}

@@ -40,7 +40,6 @@ const Header: React.FC<Props> = ({ rerender }) => {
         accountID = decodedToken.account_id;
     }
 
-
     // State declaration
     const [isProfilePopUpOpen, setIsProfilePopUpOpen] = useState<boolean>(false);
     const [isCartUsed, setIsCartUsed] = useState<boolean>(false);

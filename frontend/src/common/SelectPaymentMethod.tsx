@@ -12,9 +12,10 @@ interface Props {
     selectedPaymentMethod: string | null;
     index: number;
     handleSelectPaymentMethod: Function;
+    disabled: boolean;
 }
 
-const SelectPaymentMethod: React.FC<Props> = ({ cardBrand, last4, expDate, stripePaymentMethodID, selectedPaymentMethod, index, handleSelectPaymentMethod }) => {
+const SelectPaymentMethod: React.FC<Props> = ({ cardBrand, last4, expDate, stripePaymentMethodID, selectedPaymentMethod, index, handleSelectPaymentMethod, disabled }) => {
     const renderPaymentMethod = () => {
         if (cardBrand === "visa") {
             return <ReactSVG
@@ -35,21 +36,23 @@ const SelectPaymentMethod: React.FC<Props> = ({ cardBrand, last4, expDate, strip
             return cardBrand;
         }
     };
-
-    const selectedMainClassName = selectedPaymentMethod === stripePaymentMethodID ? "c-Select-payment-method c-Select-payment-method--selected" : "c-Select-payment-method";
+    const disabledClassName = disabled ? " c-Select-payment-method--disabled" : "";
+    const selectedMainClassName = selectedPaymentMethod === stripePaymentMethodID ? "c-Select-payment-method c-Select-payment-method--selected" + disabledClassName : "c-Select-payment-method" + disabledClassName;
     const selectedBannerClassName = selectedPaymentMethod === stripePaymentMethodID ? "c-Select-payment-method__Banner c-Select-payment-method__Banner--selected" : "c-Select-payment-method__Banner";
 
     return (
-        <div className={selectedMainClassName} onClick={() => handleSelectPaymentMethod(stripePaymentMethodID)}>
-            <span className = {selectedBannerClassName}>Selected</span>
-            <div className="c-Select-payment-method__Left">
-                <div className="c-Select-payment-method__SVG c-SVG">
-                    {renderPaymentMethod()}
+        <div className={disabled ? "l-Select-payment-method l-Select-payment-method--disabled" : "l-Select-payment-method"} >
+            <div className = {selectedMainClassName} onClick={() => handleSelectPaymentMethod(stripePaymentMethodID)}>
+                <span className={selectedBannerClassName}>Selected</span>
+                <div className="c-Select-payment-method__Left">
+                    <div className="c-Select-payment-method__SVG c-SVG">
+                        {renderPaymentMethod()}
+                    </div>
+                    <p>●●●● {last4}</p>
                 </div>
-                <p>●●●● {last4}</p>
-            </div>
-            <div className="c-Select-payment-method__Right">
-                <p>Exp. {expDate}</p>
+                <div className="c-Select-payment-method__Right">
+                    <p>Exp. {expDate}</p>
+                </div>
             </div>
         </div>
     )

@@ -5,9 +5,7 @@
     height: 146px;
     padding: 20px 30px;
     margin: 0 30px;
-    min-width: 227.150px;
-    max-width: 227.150px;
-    width: 100%;
+    width: fit-content;
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
@@ -102,7 +100,9 @@
 
     &__Chip {}
 
-    &__Num {}
+    &__Num {
+
+    }
 
     &__Bottom {
         display: flex;

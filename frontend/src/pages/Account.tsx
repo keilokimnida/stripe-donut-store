@@ -52,6 +52,7 @@ const Account: React.FC = () => {
     const [paymentHistory, setPaymentHistory] = useState<[]>([]);
     const [paymentMethods, setPaymentMethods] = useState<[]>([]);
     const [showSetupPaymentMethod, setShowSetupPaymentMethod] = useState<boolean>(false);
+    const [rerender, setRerender] = useState<boolean>(false);
 
     useEffect(() => {
         let componentMounted = true;
@@ -116,7 +117,7 @@ const Account: React.FC = () => {
         return (() => {
             componentMounted = false;
         });
-    }, []);
+    }, [rerender]);
 
     const paymentHistoryColumn = [
         {
@@ -233,7 +234,7 @@ const Account: React.FC = () => {
 
     return (
         <>
-            <SetupPaymentMethod show={showSetupPaymentMethod} handleClose={handleShowPaymentMethod} />
+            <SetupPaymentMethod show={showSetupPaymentMethod} handleClose={handleShowPaymentMethod} setRerender={setRerender} />
             <div className={showSetupPaymentMethod ? "l-Main l-Main--blur" : "l-Main"}>
                 <ToastContainer
                     position="top-center"
