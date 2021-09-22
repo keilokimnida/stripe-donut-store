@@ -1,124 +1,160 @@
 .c-Credit-card {
-    background-color: black;
+  background-color: black;
+  border-radius: 25px;
+  color: white;
+  height: 146px;
+  padding: 20px 30px;
+  margin: 0 30px;
+  width: fit-content;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  position: relative;
+
+  &--bg-var-1 {
+    background: rgb(48, 12, 233);
+    background: linear-gradient(
+      140deg,
+      rgba(48, 12, 233, 1) 0%,
+      rgba(114, 14, 255, 1) 31%,
+      rgba(130, 55, 251, 1) 49%,
+      rgba(143, 31, 255, 1) 65%,
+      rgba(157, 0, 255, 1) 93%
+    );
+  }
+
+  &--bg-var-2 {
+    background: rgb(254, 218, 112);
+    background: linear-gradient(
+      84deg,
+      rgba(254, 218, 112, 1) 0%,
+      rgba(250, 126, 30, 1) 5%,
+      rgba(214, 41, 118, 1) 50%,
+      rgba(150, 47, 191, 1) 78%,
+      rgba(79, 91, 213, 1) 100%
+    );
+  }
+
+  &--bg-var-3 {
+    background-color: $stripe-text-dark;
+  }
+
+  &--bg-var-4 {
+    background: rgb(251, 254, 112);
+    background: linear-gradient(
+      84deg,
+      rgba(251, 254, 112, 1) 0%,
+      rgba(30, 250, 229, 1) 10%,
+      rgba(41, 59, 214, 1) 40%,
+      rgba(191, 47, 183, 1) 78%,
+      rgba(213, 79, 120, 1) 100%
+    );
+  }
+  &--bg-var-5 {
+    background-color: $stripe-purple;
+  }
+
+  &--bg-var-6 {
+    background-color: $stripe-primary;
+  }
+
+  &--bg-var-7 {
+    background-color: $stripe-error-accent;
+  }
+
+  &--bg-var-8 {
+    background-color: $stripe-secondary;
+  }
+
+  &--bg-var-9 {
+    background-color: $stripe-tertiary;
+  }
+
+  &--bg-var-10 {
+    background-color: $stripe-success-fg;
+  }
+
+  h1,
+  p {
+    font-family: monospace;
+  }
+  &__Delete {
     border-radius: 25px;
-    color: white;
-    height: 146px;
-    padding: 20px 30px;
-    margin: 0 30px;
-    width: fit-content;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -o-user-select: none;
-    user-select: none;
-    position: relative;
-
-    &--bg-var-1 {
-        background: rgb(48, 12, 233);
-        background: linear-gradient(140deg, rgba(48, 12, 233, 1) 0%, rgba(114, 14, 255, 1) 31%, rgba(130, 55, 251, 1) 49%, rgba(143, 31, 255, 1) 65%, rgba(157, 0, 255, 1) 93%);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(59, 59, 59, 0.445);
+    z-index: 100000;
+    &--show {
+      display: block;
     }
 
-    &--bg-var-2 {
-        background: rgb(254, 218, 112);
-        background: linear-gradient(84deg, rgba(254, 218, 112, 1) 0%, rgba(250, 126, 30, 1) 5%, rgba(214, 41, 118, 1) 50%, rgba(150, 47, 191, 1) 78%, rgba(79, 91, 213, 1) 100%);
+    &--hidden {
+      display: none;
+    }
+  }
+
+  &__Logo {
+    display: flex;
+    justify-content: flex-end;
+
+    .c-IMG__Visa {
+      img {
+        width: 50px;
+        height: 16px;
+      }
     }
 
-    &--bg-var-3 {
-        background-color: $stripe-text-dark;
+    .c-IMG__Amex {
+      img {
+        width: 50px;
+        height: 27.5px;
+      }
+    }
+  }
+
+  &__Chip {
+  }
+
+  &__Num {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inherit;
+  }
+
+  &__Bottom {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    h1 {
+      color: white;
+      font-size: 6px;
+      font-weight: 500;
+      white-space: nowrap;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      display: inherit;
     }
 
-    &--bg-var-4 {
-        background: rgb(251, 254, 112);
-        background: linear-gradient(84deg, rgba(251, 254, 112, 1) 0%, rgba(30, 250, 229, 1) 10%, rgba(41, 59, 214, 1) 40%, rgba(191, 47, 183, 1) 78%, rgba(213, 79, 120, 1) 100%);
-    }
-    &--bg-var-5 {
-        background-color: $stripe-purple;
-    }
-
-    &--bg-var-6 {
-        background-color: $stripe-primary;
-    }
-
-    &--bg-var-7 {
-        background-color: $stripe-error-accent;
-    }
-
-    &--bg-var-8 {
-        background-color: $stripe-secondary;
-    }
-
-    &--bg-var-9 {
-        background-color: $stripe-tertiary;
-    }
-
-    &--bg-var-10 {
-        background-color: $stripe-success-fg;
-    }
-
-    h1,
     p {
-        font-family: monospace;
+      padding-left: 10px;
+      font-size: $font-small;
+      white-space: nowrap;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      display: inherit;
     }
-    &__Delete {
-        border-radius: 25px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(59, 59, 59, 0.445);
-        z-index: 100000;
-        &--show {
-            display: block;
-        }
-    
-        &--hidden {
-            display: none;
-        }
-    }
-
-    &__Logo {
-        display: flex;
-        justify-content: flex-end;
-
-        .c-IMG__Visa {
-            img {
-                width: 50px;
-                height: 16px;
-            }
-        }
-
-        .c-IMG__Amex {
-            img {
-                width: 50px;
-                height: 27.5px;
-            }
-        }
-
-    }
-
-    &__Chip {}
-
-    &__Num {
-
-    }
-
-    &__Bottom {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-
-        h1 {
-            color: white;
-            font-size: 6px;
-            font-weight: 500;
-        }
-
-        p {
-            padding-left: 10px;
-            font-size: $font-small;
-        }
-
-    }
+  }
 }
