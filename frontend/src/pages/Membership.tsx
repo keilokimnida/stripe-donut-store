@@ -25,7 +25,7 @@ const Membership: React.FC = () => {
     useEffect(() => {
         let componentMounted = true;
 
-        axios.get(`${config.baseUrl}/membership`, {
+        axios.get(`${config.baseUrl}/memberships`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -85,7 +85,7 @@ const Membership: React.FC = () => {
                                     membershipID={data.membershipID}
                                 />
                             } else {
-                                return null
+                                return null;
                             }
                         })
                     }

@@ -8,7 +8,7 @@ interface Props {
 const LoggedOut: React.FC<Props> = ({type}) => {
     return (
         <div className="c-Logged-out">
-            <h1>Please Login to Use {type || "this feature"}!</h1>
+            <h1>Please Login to {type || "continue"}!</h1>
             <NavLink to="/login">Login to Stripe Donut!</NavLink>
         </div>
     )

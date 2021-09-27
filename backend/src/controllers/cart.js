@@ -147,13 +147,13 @@ module.exports.deleteCartItem = async (req, res) => {
         });
 
         // If cart has no more item, clear payment intent
-        if (cart.length === 1 && toBeDeleted.account.stripe_payment_intent_id) {
-            await cancelPaymentIntent(toBeDeleted.account.stripe_payment_intent_id);
-            await updateAccountByID(accountID, {
-                stripe_payment_intent_id: null,
-                stripe_payment_intent_client_secret: null
-            })
-        }
+        // if (cart.length === 1 && toBeDeleted.account.stripe_payment_intent_id) {
+        //     await cancelPaymentIntent(toBeDeleted.account.stripe_payment_intent_id);
+        //     await updateAccountByID(accountID, {
+        //         stripe_payment_intent_id: null,
+        //         stripe_payment_intent_client_secret: null
+        //     })
+        // }
 
         await deleteCartItem(accountID, productID);
 

@@ -273,7 +273,6 @@ const Checkout: React.FC = () => {
         } else {
             setSelectedPaymentMethod(() => stripePaymentMethodID);
         }
-
     };
 
     return (

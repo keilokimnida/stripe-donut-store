@@ -53,5 +53,6 @@ module.exports = router => {
     router.delete("/api/v1/cart", isLoggedIn, cartController.deleteAllCartItemByAccountID);
 
     // MEMBERSHIP
-    router.get("/api/v1/membership", membershipController.findAllMemberships);
+    router.get("/api/v1/memberships", membershipController.findAllMemberships);
+    router.get("/api/v1/membership/:type", membershipController.findMembership);
 };

@@ -22,7 +22,7 @@ const Products: React.FC = () => {
     const [pageStatus, setPageStatus] = useState<PageStatusEnum>(PageStatusEnum.LOADING);
 
     useEffect(() => {
-        console.log(Math.floor((Math.random()) * 10) + 1);
+
         let componentMounted = true;
         window.scrollTo(0, 0)
         axios.get(`${config.baseUrl}/products`)
