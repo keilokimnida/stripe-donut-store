@@ -21,6 +21,14 @@ const Membership = db.define(
         description: {
             type: DataTypes.STRING(500),
             allowNull: true
+        },
+        stripe_product_id: {
+            type: DataTypes.STRING(500),
+            allowNull: true
+        },
+        stripe_price_id: {
+            type: DataTypes.STRING(255),
+            allowNull: true
         }
     },
     {

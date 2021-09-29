@@ -13,18 +13,18 @@ const MembershipCard: React.FC<Props> = ({ name, price, description, membershipI
     const history = useHistory();
 
     return (
-        <div className="c-Membership__Card">
-            <div className="c-Card__Title">
+        <div className={`c-Membership-Card c-Membership-Card--${name}`}>
+            <div className="c-Membership-Card__Title">
                 <h1>{name || "Error"}</h1>
             </div>
-            <div className="c-Card__Price">
+            <div className="c-Membership-Card__Price">
                 <h1>S${price || "Error"}</h1>
                 <p>per month</p>
             </div>
-            <div className="c-Card__Description">
+            <div className="c-Membership-Card__Description">
                 <p>{description || "Error"}</p>
             </div>
-            <div className="c-Card__Btn">
+            <div className="c-Membership-Card__Btn">
                 <button type="button" onClick={() => history.push(`/membership/payment/${name?.toLowerCase()}`)}>Get Started</button>
             </div>
 

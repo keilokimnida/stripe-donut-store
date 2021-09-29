@@ -5,58 +5,14 @@
     width: 75%;
     margin: auto;
     flex-direction: column;
-    h1 {
+    &__Heading {
         color: $stripe-text-dark;
         padding: 50px 0;
         font-weight: bolder;
     }
-    &__Card {
-        background-color: $stripe-text-dark;
-        color: white;
+    &__Cards {
         display: flex;
         justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        padding: 50px;
-        max-width: 300px;
-
-        .c-Card {
-            &__Title {
-                h1 {
-                    color: white;
-                    padding-bottom: 10px;
-                    padding-top: 0;
-                    font-weight: 400;
-                }
-            }
-            &__Price {
-                h1 {
-                    color: white;
-                    padding: 0;
-                    font-weight: bolder;
-                }
-                p {
-                    text-align: center;
-                }
-                padding-bottom: 10px;
-            }
-            &__Description {
-                padding-bottom: 10px;
-            }
-            &__Btn {
-                button {
-                    color: $stripe-text-dark;
-                    font-weight: 600;
-                    padding: 9px 12px;
-                    border-radius: 3px;
-                    border: none;
-                    cursor: pointer;
-
-                    &:hover {
-                        opacity: 0.7;
-                    }
-                }
-            }
-        }
+        flex-direction: row;
     }
 }

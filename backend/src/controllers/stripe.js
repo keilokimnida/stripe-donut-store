@@ -3,6 +3,7 @@ const { findAccountByID, updateAccountByID, findAccountByStripeCustID } = requir
 const { deleteAllCartItemByAccountID } = require('../models/cart');
 const { insertOrder } = require('../models/orders');
 const { insertPaymentMethod, updatePaymentMethod, findPaymentMethod, removePaymentMethod, findDuplicatePaymentMethod } = require('../models/paymentMethods');
+const { findMembership } = require("../models/membership");
 
 // Create payment intent
 module.exports.createPaymentIntent = async (req, res) => {
@@ -169,6 +170,59 @@ module.exports.verifyPaymentMethodSetup = async (req, res) => {
         return res.status(500).send("Error in controller > stripe.js! " + error);
     }
 }
+
+// Create Subscription
+module.exports.createSubscription = async (req, res) => {
+    try {
+
+        const { decoded } = res.locals.auth;
+        const accountID = parseInt(decoded.account_id);
+
+        const { type } = req.params;
+
+        if (!type) return res.status(400).json({
+            message: "Invalid parameter \"type\""
+        });
+
+        if (isNaN(accountID)) return res.status(400).json({
+            message: "Invalid parameter \"accountID\""
+        });
+
+        const account = await findAccountByID(accountID);
+
+        if (!account) return res.status(400).json({
+            message: "Cannot find \"account\""
+        });
+
+        const membership = await findMembership(type);
+        const stripeSubscriptionPriceID = membership.stripe_price_id;
+
+        let clientSecret;
+        let subscriptionID;
+
+        // Check if user already has a subscription id
+        if (account.stripe_subscription_id === null) {
+            const subscription = await createSubscription(account.stripe_customer_id, stripeSubscriptionPriceID);
+            clientSecret = subscription.client_secret;
+            subscriptionID = subscription.id;
+            const updateAccountContent = {
+                stripe_subscription_id: subscriptionID,
+                stripe_subscription_client_secret: clientSecret
+            };
+            // Update account with the new subscription id and client secret
+            await updateAccountByID(accountID, updateAccountContent);
+        } else {
+            clientSecret = account.stripe_subscription_client_secret;
+            subscriptionID = account.stripe_subscription_id;
+        }
+
+        return res.status(200).send({ clientSecret, subscriptionID });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Error in controller > stripe.js! " + error);
+    }
+};
 
 // Handle webhook
 module.exports.handleWebhook = async (req, res) => {

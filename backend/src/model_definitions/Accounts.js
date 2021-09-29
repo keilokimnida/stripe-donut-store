@@ -36,6 +36,7 @@ const Accounts = db.define(
                 key: "membership_id"
             }
         },
+        // Stripe
         stripe_customer_id: {
             type: DataTypes.STRING(255),
             allowNull: false,
@@ -47,6 +48,16 @@ const Accounts = db.define(
             unique: true
         },
         stripe_payment_intent_client_secret: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            unique: true
+        },
+        stripe_subscription_id: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            unique: true
+        },
+        stripe_subscription_client_secret: {
             type: DataTypes.STRING(255),
             allowNull: true,
             unique: true

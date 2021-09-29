@@ -73,22 +73,25 @@ const Membership: React.FC = () => {
             <main className="l-Main">
                 <Header />
                 <div className="c-Membership">
-                    <h1>Choose the Plan that's Right for You</h1>
-                    {
-                        membershipDetails.map((data: LooseObject, index: number) => {
-                            if (data.name !== "Normal") {
-                                return <MembershipCard
-                                    key={index}
-                                    name={data.name}
-                                    price={data.price}
-                                    description={data.description}
-                                    membershipID={data.membershipID}
-                                />
-                            } else {
-                                return null;
-                            }
-                        })
-                    }
+                    <h1 className="c-Membership__Heading">Choose the Plan that's Right for You</h1>
+                    <div className="c-Membership__Cards">
+                        {
+                            membershipDetails.map((data: LooseObject, index: number) => {
+                                if (data.name !== "Normal") {
+                                    return <MembershipCard
+                                        key={index}
+                                        name={data.name}
+                                        price={data.price}
+                                        description={data.description}
+                                        membershipID={data.membershipID}
+                                    />
+                                } else {
+                                    return null;
+                                }
+                            })
+                        }
+                    </div>
+
 
                 </div>
             </main>

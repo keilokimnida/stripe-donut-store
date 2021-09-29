@@ -137,6 +137,18 @@ const Checkout: React.FC = () => {
                                 setPaymentIntentID(() => cartData.account.stripe_payment_intent_id);
                             }
 
+                            // Update payment intent
+                            await axios.put(`${config.baseUrl}/stripe/payment_intents`, {
+                                paymentIntentID
+                            }, {
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            });
+
+                            setPaymentError(() => `Payment failed! Server encountered error!`);
+                            setPaymentProcessing(() => false);
+
                         } else {
                             setCartArr(() => []);
                         }
@@ -198,59 +210,34 @@ const Checkout: React.FC = () => {
         event.preventDefault();
         setPaymentProcessing(() => true);
 
-        let paymentIntentUpdateSuccess = false;
+        // let setup_future_usage: PaymentIntentConfirmParams.SetupFutureUsage | null | undefined = null;
 
-        // Do final update for price before confirming payment
-        try {
-            await axios.put(`${config.baseUrl}/stripe/payment_intents`, {
-                paymentIntentID
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+        // if (saveCard) {
+        //     setup_future_usage = "off_session";
+        // }
+
+        // Confirm card payment
+        // const payload: any = await stripe!.confirmCardPayment(clientSecret!, {
+        //     payment_method: {
+        //         card: elements!.getElement(CardElement)!
+        //     },
+        //     setup_future_usage
+        // });
+
+        if (selectedPaymentMethod) {
+            const payload: any = await stripe!.confirmCardPayment(clientSecret!, {
+                payment_method: selectedPaymentMethod
             });
-            paymentIntentUpdateSuccess = true;
-        } catch (error) {
-            console.log(error);
-            paymentIntentUpdateSuccess = false;
-            setPaymentError(() => `Payment failed! Server encountered error!`);
-            setPaymentProcessing(() => false);
-        }
 
-        // Only confirm payment if price update is successful
-        if (paymentIntentUpdateSuccess) {
-
-            // let setup_future_usage: PaymentIntentConfirmParams.SetupFutureUsage | null | undefined = null;
-
-            // if (saveCard) {
-            //     setup_future_usage = "off_session";
-            // }
-
-            // Confirm card payment
-            // const payload: any = await stripe!.confirmCardPayment(clientSecret!, {
-            //     payment_method: {
-            //         card: elements!.getElement(CardElement)!
-            //     },
-            //     setup_future_usage
-            // });
-
-            if (selectedPaymentMethod) {
-                const payload: any = await stripe!.confirmCardPayment(clientSecret!, {
-                    payment_method: selectedPaymentMethod
-                });
-
-                if (payload.error) {
-                    setPaymentError(() => `Payment failed! ${payload.error.message}`);
-                    setPaymentProcessing(() => false);
-                } else {
-                    setPaymentError(() => null);
-                    setPaymentProcessing(false);
-                    setPaymentSuccess(() => true);
-                    setRerender((prevState) => !prevState);
-                }
+            if (payload.error) {
+                setPaymentError(() => `Payment failed! ${payload.error.message}`);
+                setPaymentProcessing(() => false);
+            } else {
+                setPaymentError(() => null);
+                setPaymentProcessing(false);
+                setPaymentSuccess(() => true);
+                setRerender((prevState) => !prevState);
             }
-
-
         }
     };
 

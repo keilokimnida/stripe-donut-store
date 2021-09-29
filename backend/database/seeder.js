@@ -26,7 +26,16 @@ module.exports.seeder = async () => {
                 {
                     name: "Standard",
                     price: "9.90",
-                    description: "It's now or never, sign up now to get exclusive deals for Stripe Donuts!"
+                    description: "It's now or never, sign up now to get exclusive deals for Stripe Donuts!",
+                    stripe_product_id: "prod_KIoby9xxbqNiTU",
+                    stripe_price_id: "price_1JeCxuK7vevnRCV25MS9wgpk"
+                },
+                {
+                    name: "Premium",
+                    price: "15.90",
+                    description: "The best membership.",
+                    stripe_product_id: "prod_KJg7nfcsl4M2is",
+                    stripe_price_id: "price_1Jf2koK7vevnRCV2wo8qWXwx"
                 }
             ]);
         }

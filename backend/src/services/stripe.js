@@ -53,3 +53,14 @@ module.exports.cancelPaymentIntent = (paymentIntentID) => stripe.paymentIntents.
 module.exports.detachPaymentMethod = (stripePaymentMethodID) => stripe.paymentMethods.detach(
   stripePaymentMethodID
 );
+
+// Create payment intent
+module.exports.createSubscription = (stripeCustomerID, stripeSubscriptionPriceID) => stripe.paymentIntents.create({
+  customer: stripeCustomerID || null,
+  items: [{
+    price: stripeSubscriptionPriceID
+  }],
+  payment_behavior: 'default_incomplete',
+  expand: ['latest_invoice.payment_intent'],
+  receipt_email: "tkl48leon@gmail.com"
+});

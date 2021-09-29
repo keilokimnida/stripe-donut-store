@@ -64,17 +64,17 @@ const MembershipPayment: React.FC<Props> = ({ match }) => {
     const [paymentProcessing, setPaymentProcessing] = useState(false);
     const [paymentDisabled, setPaymentDisabled] = useState(true);
     const [paymentSuccess, setPaymentSuccess] = useState<boolean>(false);
-    const [paymentIntentID, setPaymentIntentID] = useState<string | null>(null);
+    const [subscriptionID, setSubscriptionID] = useState<string | null>(null);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const stripe = useStripe();
 
     let displayType;
 
-    if (match.params.type !== "standard") {
-        history.push("/page-not-found");
-    } else {
+    if (match.params.type === "standard" || match.params.type === "premium") {
         // Uppercase first letter of the string
         displayType = match.params.type.charAt(0).toUpperCase() + match.params.type.slice(1);
+    } else {
+        history.push("/page-not-found");
     }
 
     useEffect(() => {
@@ -83,12 +83,13 @@ const MembershipPayment: React.FC<Props> = ({ match }) => {
         if (!paymentSuccess) {
             (async () => {
                 try {
-                    // Get membership price
+                    
                     const membershipResponse = await axios.get(`${config.baseUrl}/membership/${match.params.type}`, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
                     });
+                    // Get membership price to display
                     const membershipData = membershipResponse.data;
 
                     // Get account info
@@ -117,12 +118,33 @@ const MembershipPayment: React.FC<Props> = ({ match }) => {
                         if (accountData) {
                             console.log(accountData);
                             const paymentMethods = accountData.account.payment_accounts;
-                            setPaymentMethods(() => paymentMethods.map((paymentMethod: LooseObject) => ({
-                                cardBrand: paymentMethod.stripe_card_type,
-                                last4: paymentMethod.stripe_card_last_four_digit,
-                                expDate: paymentMethod.stripe_card_exp_date,
-                                stripePaymentMethodID: paymentMethod.stripe_payment_method_id
-                            })));
+                            // Check if user has any payment types stored already
+                            if (paymentMethods.length > 0) {
+                                setPaymentMethods(() => paymentMethods.map((paymentMethod: LooseObject) => ({
+                                    cardBrand: paymentMethod.stripe_card_type,
+                                    last4: paymentMethod.stripe_card_last_four_digit,
+                                    expDate: paymentMethod.stripe_card_exp_date,
+                                    stripePaymentMethodID: paymentMethod.stripe_payment_method_id
+                                })));
+                            } else {
+                                setPaymentMethods(() => []);
+                            }
+
+                            // if there is subscription id
+                            if (accountData.account.stripe_subscription_id) {
+                                setSubscriptionID(() => accountData.account.stripe_subscription_client_secret);
+                                setClientSecret(() => accountData.account.stripe_subscription_id);
+                            } else {
+                                const subscription: LooseObject | null = await axios.post(`${config.baseUrl}/stripe/subscriptions/${match.params.type}`, {}, {
+                                    headers: {
+                                        'Authorization': `Bearer ${token}`
+                                    }
+                                });
+
+                                setSubscriptionID(() => subscription!.data.subscriptionID);
+                                setClientSecret(() => subscription!.data.clientSecret);
+                            }
+
                         }
                         setTimeout(() => {
                             setPageStatus(() => PageStatusEnum.ACTIVE) // set page status to active

@@ -32,7 +32,8 @@ module.exports = router => {
     router.put("/api/v1/stripe/payment_intents", isLoggedIn, calculateProductsTotalPrice, stripeController.updatePaymentIntent);
     router.get("/api/v1/stripe/payment_methods/:stripeCustomerID", isLoggedIn, stripeController.findStripeCustomerPaymentMethods);
     router.post("/api/v1/stripe/setup_intents", isLoggedIn, stripeController.createSetupIntent);
-    router.post("/api/v1/stripe/verify_payment_method_setup", isLoggedIn, stripeController.verifyPaymentMethodSetup);
+    router.post("/api/v1/stripe/verify_payment_method_setup", isLoggedIn, stripeController.verifyPaymentMethodSetup); // check if there's duplicate payment method
+    router.post("/api/v1/stripe/subscriptions/:type", isLoggedIn, stripeController.createSubscription);
    
     // ACCOUNT
     router.get("/api/v1/account/:accountID", isLoggedIn, accountController.findAccountByID);
