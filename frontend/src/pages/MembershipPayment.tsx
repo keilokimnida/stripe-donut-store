@@ -202,43 +202,43 @@ const MembershipPayment: React.FC<Props> = ({ match }) => {
         event.preventDefault();
         setPaymentProcessing(() => true);
 
-        let paymentIntentUpdateSuccess = false;
+        let subscriptionUpdateSuccess = false;
 
-        // Do final update for price before confirming payment
-        // try {
-        //     await axios.put(`${config.baseUrl}/stripe/payment_intents`, {
-        //         paymentIntentID
-        //     }, {
-        //         headers: {
-        //             'Authorization': `Bearer ${token}`
-        //         }
-        //     });
-        //     paymentIntentUpdateSuccess = true;
-        // } catch (error) {
-        //     console.log(error);
-        //     paymentIntentUpdateSuccess = false;
-        //     setPaymentError(() => `Payment failed! Server encountered error!`);
-        //     setPaymentProcessing(() => false);
-        // }
+        // Do final update for subscription type before confirming payment
+        try {
+            await axios.put(`${config.baseUrl}/stripe/subscription`, {
+                subscriptionType: match.params.type
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            subscriptionUpdateSuccess = true;
+        } catch (error) {
+            console.log(error);
+            subscriptionUpdateSuccess = false;
+            setPaymentError(() => `Payment failed! Server encountered error!`);
+            setPaymentProcessing(() => false);
+        }
 
-        // // Only confirm payment if price update is successful
-        // if (paymentIntentUpdateSuccess) {
-        //     if (selectedPaymentMethod) {
-        //         const payload: any = await stripe!.confirmCardPayment(clientSecret!, {
-        //             payment_method: selectedPaymentMethod
-        //         });
+        // Only confirm payment if subscription update is successful
+        if (subscriptionUpdateSuccess) {
+            if (selectedPaymentMethod) {
+                const payload: any = await stripe!.confirmCardPayment(clientSecret!, {
+                    payment_method: selectedPaymentMethod
+                });
 
-        //         if (payload.error) {
-        //             setPaymentError(() => `Payment failed! ${payload.error.message}`);
-        //             setPaymentProcessing(() => false);
-        //         } else {
-        //             setPaymentError(() => null);
-        //             setPaymentProcessing(false);
-        //             setPaymentSuccess(() => true);
-        //             setRerender((prevState) => !prevState);
-        //         }
-        //     }
-        // }
+                if (payload.error) {
+                    setPaymentError(() => `Payment failed! ${payload.error.message}`);
+                    setPaymentProcessing(() => false);
+                } else {
+                    setPaymentError(() => null);
+                    setPaymentProcessing(false);
+                    setPaymentSuccess(() => true);
+                    setRerender((prevState) => !prevState);
+                }
+            }
+        }
     };
 
     return (

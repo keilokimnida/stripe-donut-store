@@ -346,6 +346,18 @@ module.exports.handleWebhook = async (req, res) => {
                 await insertOrder(accountID, paymentType, cardLastFourDigit, amount);
                 break;
             }
+            case 'invoice.paid': {
+
+            }
+            case 'customer.subscription.updated': {
+                
+            }
+            case 'invoice.payment_action_required': {
+
+            }
+            case 'invoice.payment_failed': {
+                
+            }
             // Unexpected event type
             default:
                 console.log(`Unhandled event type ${event.type}.`);
