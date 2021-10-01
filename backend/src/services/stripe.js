@@ -28,6 +28,10 @@ module.exports.findStripeCustomerPaymentMethod = (stripePaymentMethodID) => stri
   stripePaymentMethodID
 );
 
+// Find payment intent
+module.exports.findPaymentIntent = (paymentIntentID) => stripe.paymentIntent.retrieve(paymentIntentID, {
+  expand: ['payment_method']
+});
 
 // Update payment intent
 module.exports.updatePaymentIntent = (paymentIntentID, totalPrice) => stripe.paymentIntents.update(
@@ -64,3 +68,11 @@ module.exports.createSubscription = (stripeCustomerID, stripeSubscriptionPriceID
   expand: ['latest_invoice.payment_intent'],
   receipt_email: "tkl48leon@gmail.com"
 });
+
+// Update defauly payment method for subscription
+module.exports.updateSubscriptionPaymentMethod = (subscriptionID, paymentMethod) => stripe.subscriptions.update(
+  subscriptionID,
+  {
+    default_payment_method: paymentMethod,
+  },
+);

@@ -1,4 +1,4 @@
-const { createPaymentIntent, createStripeCustomer, findStripeCustomerPaymentMethods, updatePaymentIntent, findStripeCustomerPaymentMethod, createSetupIntent, findPaymentMethodByStripePaymentMethodID, detachPaymentMethod } = require('../services/stripe');
+const { createPaymentIntent, createStripeCustomer, findStripeCustomerPaymentMethods, findPaymentIntent, updateSubscriptionPaymentMethod, updatePaymentIntent, findStripeCustomerPaymentMethod, createSetupIntent, findPaymentMethodByStripePaymentMethodID, detachPaymentMethod } = require('../services/stripe');
 const { findAccountByID, updateAccountByID, findAccountByStripeCustID } = require('../models/account');
 const { deleteAllCartItemByAccountID } = require('../models/cart');
 const { insertOrder } = require('../models/orders');
@@ -346,20 +346,50 @@ module.exports.handleWebhook = async (req, res) => {
                 await insertOrder(accountID, paymentType, cardLastFourDigit, amount);
                 break;
             }
-            case 'invoice.paid': {
+            case 'invoice.payment_succeeded': {
 
+                const invoice = event.data.object;
+                if (invoice.billing_reason === 'subscription_create') {
+                    const stripeSubscriptionID = invoice.subscription;
+                    const stripePaymentIntentID = invoice.payment_intent;
+                    const stripeCustomerID = invoice.customer;
+
+                    // Retrieve payment intent used to pay the subscription
+                    const stripePaymentIntent = await findPaymentIntent(stripePaymentIntentID);
+                    const stripePaymentMethod = stripePaymentIntent.payment_method;
+
+                    // set default payment method for subscription locally and on stripe
+                    await updateSubscriptionPaymentMethod(stripeSubscriptionID, stripePaymentMethod.id); // update for stripe
+                    
+                    const account = findAccountByStripeCustID(stripeCustomerID);
+                    const accountID = account.account_id;
+                    const paymentMethod = await findPaymentMethod(paymentMethod.id);
+                    
+                    // for some reason if cannot find payment method in our database then dont save
+                    if (paymentMethod) {
+                        const paymentMethodID = paymentMethod.payment_methods_id;
+                        await updateAccountByID(accountID, {
+                            fk_subscription_default_payment_method: paymentMethodID
+                        });
+                    }
+                }
             }
             case 'customer.subscription.updated': {
-                
+                // check what type of update to subscription
+                // can be...
+                // - created
+                // - deleted
+                // - change subscription status
             }
             case 'invoice.payment_action_required': {
-
+                
             }
             case 'invoice.payment_failed': {
-                
+
             }
             // Unexpected event type
             default:
+                // should print errors into a log file
                 console.log(`Unhandled event type ${event.type}.`);
         };
 

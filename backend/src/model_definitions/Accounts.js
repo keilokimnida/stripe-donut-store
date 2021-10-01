@@ -52,30 +52,6 @@ const Accounts = db.define(
             type: DataTypes.STRING(255),
             allowNull: true,
             unique: true
-        },
-        stripe_subscription_id: {
-            type: DataTypes.STRING(255),
-            allowNull: true,
-            unique: true
-        },
-        stripe_subscription_client_secret: {
-            type: DataTypes.STRING(255),
-            allowNull: true,
-            unique: true
-        },
-        fk_subscription_default_payment_method: {
-            type: DataTypes.INTEGER.UNSIGNED,
-            allowNull: true,
-            references: {
-                model: PaymentMethods,
-                key: "payment_methods_id"
-            }
-        },
-        // maybe can convert this to enum
-        stripe_subscription_payment_intent_status: {
-            type: DataTypes.STRING(255),        // can be either succeeded, requires_payment_method, or requires_action
-            allowNull: true,
-            unique: false
         }
     },
     {
@@ -87,25 +63,5 @@ const Accounts = db.define(
         deletedAt: "deleted_at"
     }
 );
-
-Membership.hasMany(Accounts, {
-    foreignKey: "fk_membership_id",
-    as: "account"
-});
-
-Accounts.belongsTo(Membership, {
-    foreignKey: "fk_membership_id",
-    as: "membership"
-});
-
-PaymentMethods.hasMany(Accounts, {
-    foreignKey: "fk_subscription_default_payment_method",
-    as: "account"
-});
-
-Accounts.belongsTo(PaymentMethods, {
-    foreignKey: "fk_subscription_default_payment_method",
-    as: "subscription_payment_method"
-});
 
 module.exports = { Accounts };

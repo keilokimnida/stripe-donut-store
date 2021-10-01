@@ -6,6 +6,8 @@ const { Membership } = require("./src/model_definitions/Membership");
 const { Orders } = require("./src/model_definitions/Orders");
 const { PaymentMethods } = require("./src/model_definitions/PaymentMethods");
 const { Accounts_PaymentMethods } = require("./src/model_definitions/Accounts_PaymentMethods");
+const { Subscription } = require("./src/model_definitions/Subscription");
+const { Transaction } = require("./src/model_definitions/Transaction");
 
 
 const express = require("express");
@@ -38,7 +40,7 @@ app.listen(PORT, (error) => {
 });
 
 // setting this to true will drop all tables and seed new data
-const reset = false;
+const reset = true;
 
 // sync sequelize with sql db
 // immediately invoked function necessary to run await async code
